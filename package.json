@@ -1,0 +1,14 @@
+{
+  "name": "tableturn-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"yellow,cyan\" \"npm --prefix server start\" \"npm --prefix client run dev\"",
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}

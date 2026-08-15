@@ -44,6 +44,7 @@ export const ReservationModal = () => {
     selectedSlot,
     setSelectedSlot,
     selectedDate,
+    setSelectedDate,
     partySize,
     setPartySize,
     showToast,
@@ -267,38 +268,91 @@ END:VCALENDAR`;
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="space-y-4">
                 
-                {/* Date & Time Summary Card */}
-                <div className="p-4 rounded-2xl bg-surface-200 border border-white/10 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-400">
-                      <Calendar className="w-5 h-5" />
+                {/* Interactive Date, Time & Guests Selector Bar */}
+                <div className="p-3 rounded-2xl bg-surface-200 border border-gold-500/30 grid grid-cols-1 sm:grid-cols-3 gap-3 shadow-inner">
+                  
+                  {/* 1. Date Picker */}
+                  <div className="p-2.5 rounded-xl bg-surface-100 border border-white/10 flex items-center gap-2.5 hover:border-gold-500/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-gold-500/15 flex items-center justify-center text-gold-400 shrink-0">
+                      <Calendar className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">Selected Date</p>
-                      <p className="text-sm font-bold text-white">{selectedDate}</p>
+                    <div className="flex-1 min-w-0">
+                      <label className="text-[9px] font-extrabold text-gold-400 uppercase tracking-wider block">
+                        Selected Date
+                      </label>
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="w-full bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
+                      />
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-400">
-                      <Clock className="w-5 h-5" />
+                  {/* 2. Time Slot Dropdown */}
+                  <div className="p-2.5 rounded-xl bg-surface-100 border border-white/10 flex items-center gap-2.5 hover:border-gold-500/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-gold-500/15 flex items-center justify-center text-gold-400 shrink-0">
+                      <Clock className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">Reserved Time</p>
-                      <p className="text-sm font-bold text-gold-300">{selectedSlot?.time || '07:30 PM'}</p>
+                    <div className="flex-1 min-w-0">
+                      <label className="text-[9px] font-extrabold text-gold-400 uppercase tracking-wider block">
+                        Reserved Time
+                      </label>
+                      <select
+                        value={selectedSlot?.time || '07:30 PM'}
+                        onChange={(e) => {
+                          const found = (bookingRestaurant.defaultSlots || []).find((s) => s.time === e.target.value);
+                          if (found) {
+                            setSelectedSlot(found);
+                            if (found.type) setSeatingArea(found.type);
+                          } else {
+                            setSelectedSlot({ time: e.target.value, type: seatingArea });
+                          }
+                        }}
+                        className="w-full bg-transparent text-xs font-bold text-gold-300 focus:outline-none cursor-pointer"
+                      >
+                        {(bookingRestaurant.defaultSlots || [
+                          { time: '12:30 PM' },
+                          { time: '01:15 PM' },
+                          { time: '07:00 PM' },
+                          { time: '07:45 PM' },
+                          { time: '08:30 PM' },
+                          { time: '09:15 PM' },
+                        ]).map((s, idx) => (
+                          <option key={idx} value={s.time} className="bg-slate-900 text-white">
+                            {s.time} {s.type ? `(${s.type})` : ''}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-400">
-                      <Users className="w-5 h-5" />
+                  {/* 3. Party Size Selector */}
+                  <div className="p-2.5 rounded-xl bg-surface-100 border border-white/10 flex items-center gap-2.5 hover:border-gold-500/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-gold-500/15 flex items-center justify-center text-gold-400 shrink-0">
+                      <Users className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">Party Size</p>
-                      <p className="text-sm font-bold text-white">{partySize} Guests</p>
+                    <div className="flex-1 min-w-0">
+                      <label className="text-[9px] font-extrabold text-gold-400 uppercase tracking-wider block">
+                        Party Size
+                      </label>
+                      <select
+                        value={partySize}
+                        onChange={(e) => setPartySize(parseInt(e.target.value, 10))}
+                        className="w-full bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16, 20].map((num) => (
+                          <option key={num} value={num} className="bg-slate-900 text-white">
+                            {num} {num === 1 ? 'Guest (Solo Table)' : num === 2 ? 'Guests (Table for 2)' : `${num} Guests`}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
+
                 </div>
+
 
                 {/* Seating Area Selection */}
                 <div>

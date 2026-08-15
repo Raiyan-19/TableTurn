@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, User, Phone, Sparkles, Shield, Building } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
 
 export const AuthModal = () => {
-  const { isAuthModalOpen, closeAuthModal, authMode, openAuthModal, login, register, demoLogin } = useAuth();
+  const { isAuthModalOpen, closeAuthModal, authMode, openAuthModal, login, register } = useAuth();
   const { showToast } = useReservation();
 
   const [name, setName] = useState('');
@@ -37,15 +37,6 @@ export const AuthModal = () => {
     }
   };
 
-  const handleDemo = async (role) => {
-    try {
-      await demoLogin(role);
-      showToast(`Logged in as Demo ${role.toUpperCase()}!`);
-    } catch (err) {
-      setErrorMsg(err.message || 'Demo login failed');
-    }
-  };
-
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
@@ -67,7 +58,7 @@ export const AuthModal = () => {
           className="relative w-full max-w-md bg-surface-300 rounded-3xl border border-gold-500/30 p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-white/10">
+          <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
             <div>
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-400">
                 TableTurn Bangladesh
@@ -84,41 +75,12 @@ export const AuthModal = () => {
             </button>
           </div>
 
-          {/* Quick 1-Click Demo Profiles */}
-          <div className="my-4 p-3 rounded-2xl bg-gold-500/10 border border-gold-500/20">
-            <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-400 flex items-center gap-1 mb-2">
-              <Sparkles className="w-3 h-3" /> Instant 1-Click Demo Sign In:
-            </p>
-            <div className="grid grid-cols-3 gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleDemo('user')}
-                className="py-1.5 px-2 rounded-lg bg-surface-100 hover:bg-gold-500 hover:text-slate-950 text-[10px] font-bold text-slate-200 transition-colors flex items-center justify-center gap-1 border border-white/5"
-              >
-                <User className="w-3 h-3" /> Diner
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemo('manager')}
-                className="py-1.5 px-2 rounded-lg bg-surface-100 hover:bg-gold-500 hover:text-slate-950 text-[10px] font-bold text-slate-200 transition-colors flex items-center justify-center gap-1 border border-white/5"
-              >
-                <Building className="w-3 h-3" /> Manager
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemo('admin')}
-                className="py-1.5 px-2 rounded-lg bg-surface-100 hover:bg-gold-500 hover:text-slate-950 text-[10px] font-bold text-slate-200 transition-colors flex items-center justify-center gap-1 border border-white/5"
-              >
-                <Shield className="w-3 h-3" /> Admin
-              </button>
-            </div>
-          </div>
-
           {errorMsg && (
             <div className="p-3 rounded-xl bg-crimson-500/20 border border-crimson-500/40 text-crimson-300 text-xs mb-3">
               {errorMsg}
             </div>
           )}
+
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">

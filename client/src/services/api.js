@@ -198,24 +198,32 @@ export const api = {
     }
   },
 
-  async demoLogin(role = 'user') {
+  // 4. Admin & Manager Management
+  async getAdminReservations(params = {}) {
     try {
-      const res = await apiClient.post('/auth/demo', { role });
+      const res = await apiClient.get('/admin/reservations', { params });
       return res.data;
     } catch (err) {
-      // Local demo session
-      return {
-        success: true,
-        user: {
-          id: 'demo_usr_01',
-          name: role === 'manager' ? 'Gulshan Venue Manager' : 'Tanvir Hossain (Dhaka)',
-          email: `${role}@tableturn.bd`,
-          phone: '+8801711223344',
-          role: role,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-        },
-        token: 'demo_jwt_token_2026',
-      };
+      throw err.response ? err.response.data : new Error('Failed to load admin reservations');
+    }
+  },
+
+  async getAdminStats() {
+    try {
+      const res = await apiClient.get('/admin/stats');
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to load platform statistics');
+    }
+  },
+
+  async updateAdminReservationStatus(id, status) {
+    try {
+      const res = await apiClient.patch(`/admin/reservations/${encodeURIComponent(id)}/status`, { status });
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to update reservation status');
     }
   },
 };
+

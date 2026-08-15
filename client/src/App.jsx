@@ -13,6 +13,7 @@ import { RestaurantDetailModal } from './components/RestaurantDetailModal';
 import { MyBookingsDrawer } from './components/MyBookingsDrawer';
 import { AuthModal } from './components/AuthModal';
 import { HostPortalModal } from './components/HostPortalModal';
+import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { Footer } from './components/Footer';
 
 // Toast Notification Overlay
@@ -41,7 +42,7 @@ const ToastNotification = () => {
 };
 
 function MainLayout() {
-  const { isHostPortalOpen, setIsHostPortalOpen } = useReservation();
+  const { isHostPortalOpen, setIsHostPortalOpen, isAdminModalOpen, setIsAdminModalOpen } = useReservation();
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-slate-100 selection:bg-gold-500 selection:text-black">
@@ -60,10 +61,12 @@ function MainLayout() {
       <MyBookingsDrawer />
       <AuthModal />
       <HostPortalModal isOpen={isHostPortalOpen} onClose={() => setIsHostPortalOpen(false)} />
+      <AdminDashboardModal isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} />
       <ToastNotification />
     </div>
   );
 }
+
 
 export default function App() {
   return (

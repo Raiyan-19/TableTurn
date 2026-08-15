@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { useAuth } from './AuthContext';
 
 const ReservationContext = createContext(null);
 
 export const ReservationProvider = ({ children }) => {
+  const { isAuthenticated, openAuthModal } = useAuth();
+
   // Selected Filters State
   const [selectedDivision, setSelectedDivision] = useState('All');
   const [selectedSubZone, setSelectedSubZone] = useState('All');
@@ -33,8 +36,9 @@ export const ReservationProvider = ({ children }) => {
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
 
-  // Host Manager Partner Portal Modal State
+  // Host Stand & Admin Portal Modal States
   const [isHostPortalOpen, setIsHostPortalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   // Toast Notification State
   const [toast, setToast] = useState(null);
@@ -50,17 +54,27 @@ export const ReservationProvider = ({ children }) => {
     setLoadingBookings(true);
     try {
       const res = await api.getMyReservations();
-      if (res.success) {
+      if (res && res.success && Array.isArray(res.data)) {
         setMyBookings(res.data);
+      } else {
+        const local = JSON.parse(localStorage.getItem('tableturn_local_bookings') || '[]');
+        setMyBookings(local);
       }
     } catch (e) {
-      console.error(e);
+      const local = JSON.parse(localStorage.getItem('tableturn_local_bookings') || '[]');
+      setMyBookings(local);
     } finally {
       setLoadingBookings(false);
     }
   };
 
   const openBookingModal = (restaurant, slot = null) => {
+    if (!isAuthenticated) {
+      showToast('Please sign in to make a table reservation.', 'error');
+      openAuthModal('login');
+      return;
+    }
+
     setBookingRestaurant(restaurant);
     setSelectedSlot(slot || (restaurant.defaultSlots && restaurant.defaultSlots[0]) || { time: '07:30 PM', type: 'Main Dining' });
     setIsBookingModalOpen(true);
@@ -133,6 +147,8 @@ export const ReservationProvider = ({ children }) => {
         setIsBookingsDrawerOpen,
         isHostPortalOpen,
         setIsHostPortalOpen,
+        isAdminModalOpen,
+        setIsAdminModalOpen,
         myBookings,
         setMyBookings,
         fetchMyBookings,
@@ -147,3 +163,4 @@ export const ReservationProvider = ({ children }) => {
 };
 
 export const useReservation = () => useContext(ReservationContext);
+

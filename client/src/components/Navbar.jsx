@@ -183,6 +183,18 @@ export const Navbar = () => {
             <span className="hidden sm:inline">Filters</span>
           </button>
 
+          {/* Admin / Manager Direct Launch Button */}
+          {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
+            <button
+              onClick={() => setIsAdminModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-amber-500/20 to-gold-500/20 hover:from-gold-500 hover:to-amber-400 hover:text-slate-950 border border-gold-500/50 text-gold-400 text-xs font-extrabold shadow-glow-gold transition-all"
+              title="Open Admin & Manager Management Terminal"
+            >
+              <ShieldCheck className="w-4 h-4 text-gold-400 group-hover:text-slate-950" />
+              <span className="hidden sm:inline">Admin Panel</span>
+            </button>
+          )}
+
           {/* My Bookings Trigger */}
           <button
             onClick={() => setIsBookingsDrawerOpen(true)}
@@ -235,6 +247,18 @@ export const Navbar = () => {
                     </div>
 
                     <div className="pt-2 flex flex-col gap-1">
+                      {(user.role === 'admin' || user.role === 'manager') && (
+                        <button
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            setIsAdminModalOpen(true);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-bold text-gold-300 hover:bg-gold-500/20 rounded-lg flex items-center gap-2"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
+                          Admin & Manager Terminal
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           setIsProfileDropdownOpen(false);
@@ -250,10 +274,10 @@ export const Navbar = () => {
                           setIsProfileDropdownOpen(false);
                           setIsHostPortalOpen(true);
                         }}
-                        className="w-full text-left px-3 py-2 text-xs text-gold-300 hover:bg-gold-500/10 rounded-lg flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 text-xs text-slate-200 hover:bg-white/5 rounded-lg flex items-center gap-2"
                       >
                         <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-                        Host Stand & QR Scanner
+                        Host Stand & Scanner
                       </button>
                       <button
                         onClick={() => {
@@ -272,19 +296,9 @@ export const Navbar = () => {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              {/* Quick 1-Click Demo User */}
-              <button
-                onClick={() => demoLogin('user')}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/30 text-gold-400 text-xs font-bold transition-all"
-                title="Instant Demo Session"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-                <span>Demo User</span>
-              </button>
-
               <button
                 onClick={() => openAuthModal('login')}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 font-bold text-xs shadow-glow-gold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 font-bold text-xs shadow-glow-gold transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 Sign In
               </button>
@@ -295,3 +309,4 @@ export const Navbar = () => {
     </header>
   );
 };
+

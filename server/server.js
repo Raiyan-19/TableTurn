@@ -19,11 +19,44 @@ connectDB().then(async (connected) => {
         await Restaurant.insertMany(seedRestaurants);
         console.log(`[Database] Auto-seeded ${seedRestaurants.length} restaurants across 8 divisions!`);
       }
+
+      // Auto-seed default Admin & Manager accounts if missing
+      const User = require('./models/User');
+      const adminUser = await User.findOne({ email: 'admin@tableturn.bd' }).select('+password');
+      if (!adminUser) {
+        await User.create({
+          name: 'System Admin Bangladesh',
+          email: 'admin@tableturn.bd',
+          phone: '01912345678',
+          password: 'admin1122',
+          role: 'admin',
+        });
+        console.log('[Database] Auto-seeded System Admin: admin@tableturn.bd');
+      } else {
+        // Ensure admin has role 'admin'
+        if (adminUser.role !== 'admin') {
+          adminUser.role = 'admin';
+          await adminUser.save();
+        }
+      }
+
+      const mgrUser = await User.findOne({ email: 'manager@thegrove.bd' });
+      if (!mgrUser) {
+        await User.create({
+          name: 'Shakila Jahan (Gulshan Grove Manager)',
+          email: 'manager@thegrove.bd',
+          phone: '01819887766',
+          password: 'Shakila1122',
+          role: 'manager',
+        });
+        console.log('[Database] Auto-seeded Venue Manager: manager@thegrove.bd');
+      }
     } catch (e) {
       console.warn('[Database] Auto-seeding check skipped:', e.message);
     }
   }
 });
+
 
 const { authLimiter, apiLimiter } = require('./middleware/rateLimiter');
 
@@ -71,6 +104,8 @@ app.use('/api', apiLimiter);
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/restaurants', require('./routes/restaurantRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+
 
 // Health & Status check
 app.get('/api/health', (req, res) => {

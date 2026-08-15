@@ -54,15 +54,17 @@ const createRateLimiter = ({
 };
 
 // Specific limiters for different sensitive endpoints
+const isProd = process.env.NODE_ENV === 'production';
+
 const authLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 mins
-  max: 20, // 20 login/register attempts per IP
+  max: isProd ? 30 : 500, // Generous threshold in development
   message: 'Too many authentication attempts. Please try again after 15 minutes.',
 });
 
 const apiLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 300, // 300 requests per 15 minutes
+  max: isProd ? 300 : 2000,
   message: 'Too many requests to the API. Please slow down.',
 });
 
@@ -71,3 +73,4 @@ module.exports = {
   authLimiter,
   apiLimiter,
 };
+

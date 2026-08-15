@@ -52,15 +52,6 @@ export const AuthProvider = ({ children }) => {
     return res;
   };
 
-  const demoLogin = async (role = 'user') => {
-    const res = await api.demoLogin(role);
-    if (res.success) {
-      saveAuthSession(res);
-      setIsAuthModalOpen(false);
-    }
-    return res;
-  };
-
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -96,7 +87,6 @@ export const AuthProvider = ({ children }) => {
         closeAuthModal: () => setIsAuthModalOpen(false),
         login,
         register,
-        demoLogin,
         logout,
         favorites,
         toggleFavorite,
@@ -106,5 +96,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = () => useContext(AuthContext);

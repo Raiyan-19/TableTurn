@@ -36,32 +36,33 @@ export const HostPortalModal = ({ isOpen, onClose }) => {
     setLookupResult(null);
 
     try {
-      // Direct lookup from API or local fallback
+      // Secure lookup directly via dedicated lookup endpoint
       const cleanCode = searchCode.trim().toUpperCase();
-      const res = await api.getMyReservations();
+      const res = await api.lookupReservation(cleanCode);
       if (res.success && res.data) {
-        const found = res.data.find(
-          (b) => (b.reservationCode && b.reservationCode.toUpperCase() === cleanCode) || b._id === cleanCode
-        );
-        if (found) {
-          setLookupResult(found);
-        } else {
-          setErrorMsg(`No active reservation found with code "${cleanCode}".`);
-        }
+        setLookupResult(res.data);
+      } else {
+        setErrorMsg(`No active reservation found with code "${cleanCode}".`);
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Lookup failed. Please verify the code.');
+      setErrorMsg(err.message || 'Lookup failed. Please verify the reservation reference code.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSeatGuest = () => {
+  const handleSeatGuest = async () => {
     if (lookupResult) {
-      setLookupResult({ ...lookupResult, status: 'seated' });
-      showToast(`Guest ${lookupResult.guestName} marked as Seated!`);
+      try {
+        await api.checkinReservation(lookupResult._id || lookupResult.reservationCode);
+        setLookupResult({ ...lookupResult, status: 'seated' });
+        showToast(`Guest ${lookupResult.guestName} marked as Seated!`);
+      } catch (err) {
+        showToast(err.message || 'Check-in failed', 'error');
+      }
     }
   };
+
 
   return (
     <AnimatePresence>

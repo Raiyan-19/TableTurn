@@ -203,23 +203,20 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Quick demo login helper for seamless testing (Restricted in Production)
+// @desc    Quick demo login helper for seamless testing (Restricted to Diner 'user' role)
 // @route   POST /api/auth/demo
 const demoLogin = async (req, res) => {
   try {
-    if (process.env.NODE_ENV === 'production') {
+    const requestedRole = typeof req.body.role === 'string' ? req.body.role : 'user';
+
+    if (requestedRole === 'admin' || requestedRole === 'manager') {
       return res.status(403).json({
         success: false,
-        message: 'Demo login is disabled in production environment for security.',
+        message: 'Unauthenticated administrative demo sign-in is disabled. Please authenticate with valid manager/admin credentials via /api/auth/login.',
       });
     }
 
-    const requestedRole = typeof req.body.role === 'string' ? req.body.role : 'user';
-    // Allow demo switching in non-prod, but safeguard role values
-    const validRoles = ['user', 'manager', 'admin'];
-    const safeRole = validRoles.includes(requestedRole) ? requestedRole : 'user';
-
-    let target = memoryUsers.find((u) => u.role === safeRole) || memoryUsers[0];
+    const target = memoryUsers.find((u) => u.role === 'user') || memoryUsers[0];
 
     return res.json({
       success: true,
@@ -228,15 +225,16 @@ const demoLogin = async (req, res) => {
         name: target.name,
         email: target.email,
         phone: target.phone,
-        role: target.role,
+        role: 'user',
         avatar: target.avatar,
       },
-      token: generateToken(target._id, target.role, target.name, target.email, target.phone),
+      token: generateToken(target._id, 'user', target.name, target.email, target.phone),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // @desc    Get current user profile
 // @route   GET /api/auth/me

@@ -56,6 +56,15 @@ const createReservation = async (req, res) => {
       });
     }
 
+    // Business Logic: Prevent reservations for past dates
+    const today = new Date().toISOString().split('T')[0];
+    if (date < today) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reservations cannot be made for past dates.',
+      });
+    }
+
     // BD Phone validation regex (+8801XXXXXXXXX or 01XXXXXXXXX)
     const bdPhoneRegex = /^(?:\+8801|01)[3-9]\d{8}$/;
     if (!bdPhoneRegex.test(guestPhone.replace(/\s+/g, ''))) {
@@ -65,10 +74,20 @@ const createReservation = async (req, res) => {
       });
     }
 
-    // Find restaurant details
+    // Find restaurant details safely
     let restaurant;
     if (getDBStatus()) {
-      restaurant = await Restaurant.findById(restaurantId);
+      const isObjectId = typeof restaurantId === 'string' && /^[0-9a-fA-F]{24}$/.test(restaurantId);
+      if (isObjectId) {
+        restaurant = await Restaurant.findById(restaurantId);
+      } else {
+        restaurant = await Restaurant.findOne({
+          name: new RegExp(`^${restaurantId}$`, 'i'),
+        });
+        if (!restaurant) {
+          restaurant = await Restaurant.findOne();
+        }
+      }
     } else {
       restaurant = memoryRestaurants.find(
         (r) =>
@@ -81,6 +100,7 @@ const createReservation = async (req, res) => {
     if (!restaurant) {
       return res.status(404).json({ success: false, message: 'Restaurant not found' });
     }
+
 
     const reservationCode = generateReservationCode(restaurant.division);
 
@@ -305,10 +325,46 @@ const cancelReservation = async (req, res) => {
   }
 };
 
+// @desc    Seat table / Check in guest (Host stand action)
+// @route   PATCH /api/reservations/:id/checkin
+const checkinReservation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (getDBStatus()) {
+      const isObjectId = typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+      const query = isObjectId ? { _id: id } : { reservationCode: id.toUpperCase() };
+      const reservation = await Reservation.findOne(query);
+
+      if (!reservation) {
+        return res.status(404).json({ success: false, message: 'Reservation not found' });
+      }
+
+      reservation.status = 'seated';
+      await reservation.save();
+      return res.json({ success: true, message: 'Guest marked as seated', data: reservation });
+    } else {
+      const reservation = memoryReservations.find(
+        (r) => r._id === id || r.reservationCode.toUpperCase() === id.toUpperCase()
+      );
+      if (!reservation) {
+        return res.status(404).json({ success: false, message: 'Reservation not found' });
+      }
+
+      reservation.status = 'seated';
+      return res.json({ success: true, message: 'Guest marked as seated', data: reservation });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createReservation,
   getMyReservations,
   lookupReservation,
   cancelReservation,
+  checkinReservation,
   memoryReservations,
 };
+

@@ -121,11 +121,47 @@ export const api = {
 
   async getMyReservations(params = {}) {
     try {
+      const token = localStorage.getItem('tableturn_token');
+      if (!token) {
+        const localBookings = JSON.parse(localStorage.getItem('tableturn_local_bookings') || '[]');
+        return { success: true, count: localBookings.length, data: localBookings };
+      }
       const res = await apiClient.get('/reservations/my', { params });
       return res.data;
     } catch (err) {
       const currentBookings = JSON.parse(localStorage.getItem('tableturn_local_bookings') || '[]');
       return { success: true, count: currentBookings.length, data: currentBookings };
+    }
+  },
+
+  async lookupReservation(code) {
+    try {
+      const clean = encodeURIComponent(code.trim().toUpperCase());
+      const res = await apiClient.get(`/reservations/lookup/${clean}`);
+      return res.data;
+    } catch (err) {
+      const local = JSON.parse(localStorage.getItem('tableturn_local_bookings') || '[]');
+      const cleanCode = code.trim().toUpperCase();
+      const found = local.find(
+        (b) => (b.reservationCode && b.reservationCode.toUpperCase() === cleanCode) || b._id === cleanCode
+      );
+      if (found) {
+        return { success: true, data: found };
+      }
+      throw err.response ? err.response.data : new Error('Reservation lookup failed');
+    }
+  },
+
+  async checkinReservation(id) {
+    try {
+      const res = await apiClient.patch(`/reservations/${encodeURIComponent(id)}/checkin`);
+      return res.data;
+    } catch (err) {
+      localReservations = localReservations.map((b) =>
+        b._id === id || b.reservationCode === id ? { ...b, status: 'seated' } : b
+      );
+      localStorage.setItem('tableturn_local_bookings', JSON.stringify(localReservations));
+      return { success: true, message: 'Guest marked as seated locally' };
     }
   },
 
@@ -141,6 +177,7 @@ export const api = {
       return { success: true, message: 'Reservation cancelled successfully' };
     }
   },
+
 
   // 3. Auth
   async login(credentials) {

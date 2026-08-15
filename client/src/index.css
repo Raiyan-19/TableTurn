@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: dark light;
 }
 
 html {
@@ -12,13 +12,23 @@ html {
   overflow-y: auto;
 }
 
+/* Base Body Modes */
+html.dark body {
+  background-color: #080A10;
+  color: #F1F5F9;
+}
+
+html.light body {
+  background-color: #F8F9FC;
+  color: #0F172A;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color: #080A10;
-  color: #F1F5F9;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom smooth scrollbar */
@@ -27,7 +37,7 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0C0F17;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #273043;
@@ -45,6 +55,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06);
+}
+
 .glass-panel-gold {
   background: rgba(20, 16, 10, 0.94);
   backdrop-filter: blur(20px);
@@ -52,11 +70,24 @@ body {
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+html.light .glass-panel-gold {
+  background: rgba(255, 252, 245, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  box-shadow: 0 15px 35px -10px rgba(217, 119, 6, 0.12);
+}
+
 .glass-pill {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.light .glass-pill {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass-pill:hover {
@@ -67,9 +98,30 @@ body {
 /* Radial ambient light glow */
 .mesh-gradient-bg {
   background: 
-    radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.09) 0%, transparent 50%);
+}
+
+html.light .mesh-gradient-bg {
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
     radial-gradient(circle at 85% 25%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 50%);
+    radial-gradient(circle at 50% 80%, rgba(217, 119, 6, 0.06) 0%, transparent 50%);
+}
+
+/* Space Black Cosmic Star Particle Animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 0.9; transform: scale(1.2); }
+}
+
+.space-star {
+  position: absolute;
+  background: #FFF;
+  border-radius: 50%;
+  box-shadow: 0 0 6px 1px rgba(245, 158, 11, 0.6);
+  animation: twinkle 3s infinite ease-in-out;
 }
 
 /* Shimmer animation */

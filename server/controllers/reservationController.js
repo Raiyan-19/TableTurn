@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const QRCode = require('qrcode');
 const Reservation = require('../models/Reservation');
 const { Restaurant } = require('../models/Restaurant');
@@ -7,12 +8,13 @@ const { getDBStatus } = require('../config/db');
 // In-memory reservations store
 let memoryReservations = [];
 
-// Helper to generate custom human-friendly Bangladesh reservation code (e.g. TT-DHK-4892)
+// Helper to generate secure, high-entropy Bangladesh reservation reference code (e.g. TT-DHK-4892A7B1)
 const generateReservationCode = (division = 'DHK') => {
   const divCode = division ? division.substring(0, 3).toUpperCase() : 'BD';
-  const randomNum = Math.floor(1000 + Math.random() * 9000);
-  return `TT-${divCode}-${randomNum}`;
+  const randomHex = crypto.randomBytes(4).toString('hex').toUpperCase();
+  return `TT-${divCode}-${randomHex}`;
 };
+
 
 // Helper to generate QR code data URI
 const generateQRCodeURI = async (payload) => {

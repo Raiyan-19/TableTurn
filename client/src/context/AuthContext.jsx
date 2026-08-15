@@ -59,7 +59,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('tableturn_user');
   };
 
-  const toggleFavorite = (restaurantId) => {
+  const toggleFavorite = async (restaurantId) => {
+    // Optimistic UI update
     setFavorites((prev) => {
       let updated;
       if (prev.includes(restaurantId)) {
@@ -70,6 +71,23 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('tableturn_favs', JSON.stringify(updated));
       return updated;
     });
+
+    if (token) {
+      try {
+        await api.toggleFavorite(restaurantId);
+      } catch (e) {
+        console.warn('Favorite sync warning:', e.message);
+      }
+    }
+  };
+
+  const updateUserProfile = async (profileData) => {
+    const res = await api.updateProfile(profileData);
+    if (res.success && res.user) {
+      setUser(res.user);
+      localStorage.setItem('tableturn_user', JSON.stringify(res.user));
+    }
+    return res;
   };
 
   return (
@@ -90,6 +108,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         favorites,
         toggleFavorite,
+        updateUserProfile,
       }}
     >
       {children}
@@ -97,5 +116,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
 export const useAuth = () => useContext(AuthContext);
+

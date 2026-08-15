@@ -38,12 +38,40 @@ export const HeroSection = () => {
   return (
     <section className="relative pt-8 pb-10 md:pt-14 md:pb-16 overflow-hidden mesh-gradient-bg">
       
+      {/* Space Black Cosmic Star Particle Field */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        {[
+          { top: '10%', left: '15%', size: '3px', delay: '0s' },
+          { top: '25%', left: '80%', size: '2px', delay: '1.2s' },
+          { top: '45%', left: '35%', size: '4px', delay: '0.6s' },
+          { top: '65%', left: '90%', size: '2.5px', delay: '1.8s' },
+          { top: '18%', left: '60%', size: '3px', delay: '2.1s' },
+          { top: '80%', left: '20%', size: '2px', delay: '0.9s' },
+          { top: '35%', left: '8%', size: '3.5px', delay: '1.5s' },
+          { top: '75%', left: '65%', size: '2px', delay: '0.3s' },
+          { top: '55%', left: '50%', size: '3px', delay: '2.4s' },
+        ].map((star, i) => (
+          <div
+            key={i}
+            className="space-star hidden dark:block"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: star.size,
+              height: star.size,
+              animationDelay: star.delay,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Dynamic Background Ambient Glowing Orbs */}
       <div className="absolute top-10 left-1/4 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle" />
       <div className="absolute top-40 right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-float-slow" />
       <div className="absolute -bottom-10 left-1/3 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         
         {/* Top Tagline & Hero Title */}
         <div className="text-center max-w-4xl mx-auto">

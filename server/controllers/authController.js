@@ -234,6 +234,7 @@ const loginUser = async (req, res) => {
 
 // @desc    Get current user profile
 // @route   GET /api/auth/me
+
 const getMe = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -249,10 +250,108 @@ const getMe = async (req, res) => {
   }
 };
 
+// @desc    Toggle favorite restaurant for current user
+// @route   POST /api/auth/favorites/:restaurantId
+const toggleFavorite = async (req, res) => {
+
+  try {
+    const userId = req.user.id;
+    const { restaurantId } = req.params;
+
+    if (getDBStatus()) {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      if (!Array.isArray(user.favorites)) {
+        user.favorites = [];
+      }
+
+      const favIndex = user.favorites.findIndex((f) => f.toString() === restaurantId);
+      let isFavorited = false;
+      if (favIndex > -1) {
+        user.favorites.splice(favIndex, 1);
+        isFavorited = false;
+      } else {
+        user.favorites.push(restaurantId);
+        isFavorited = true;
+      }
+
+      await user.save();
+      return res.json({
+        success: true,
+        isFavorited,
+        favorites: user.favorites,
+        message: isFavorited ? 'Added to favorites' : 'Removed from favorites',
+      });
+    } else {
+      return res.json({
+        success: true,
+        message: 'Favorite updated',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update user profile info
+// @route   PUT /api/auth/profile
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, phone, avatar } = req.body;
+
+    if (getDBStatus()) {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      if (name) user.name = name.trim();
+      if (phone) user.phone = phone.trim();
+      if (avatar) user.avatar = avatar;
+
+      await user.save();
+      return res.json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          avatar: user.avatar,
+          favorites: user.favorites,
+        },
+      });
+    } else {
+      const user = memoryUsers.find((u) => u._id === userId);
+      if (user) {
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (avatar) user.avatar = avatar;
+      }
+      return res.json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: user || req.user,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  toggleFavorite,
+  updateProfile,
   memoryUsers,
 };
+
 

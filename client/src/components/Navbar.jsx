@@ -10,24 +10,30 @@ import {
   SlidersHorizontal, 
   ShieldCheck,
   Search,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
+import { useTheme } from '../context/ThemeContext';
 import { BANGLADESH_DIVISIONS } from '../data/mockData';
 
 export const Navbar = () => {
-  const { user, isAuthenticated, openAuthModal, logout, demoLogin } = useAuth();
+  const { user, isAuthenticated, openAuthModal, logout } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const { 
     selectedDivision, 
     setSelectedDivision, 
     setIsFilterDrawerOpen, 
     setIsBookingsDrawerOpen,
     setIsHostPortalOpen,
+    setIsAdminModalOpen,
     myBookings,
     searchQuery,
     setSearchQuery 
   } = useReservation();
+
 
   const [isDivisionDropdownOpen, setIsDivisionDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -171,8 +177,21 @@ export const Navbar = () => {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           
+          {/* Dark / Light Mode Luxury Switcher */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-surface-100 hover:bg-surface-50 border border-white/10 text-gold-400 transition-all hover:scale-105 shadow-inner"
+            title={isDark ? 'Switch to Silk Light Mode' : 'Switch to Space Black Mode'}
+          >
+            {isDark ? (
+              <Sun className="w-4 h-4 text-amber-400 animate-pulse" />
+            ) : (
+              <Moon className="w-4 h-4 text-indigo-500" />
+            )}
+          </button>
+
           {/* Advanced Filter Button */}
           <button
             onClick={() => setIsFilterDrawerOpen(true)}
@@ -182,6 +201,7 @@ export const Navbar = () => {
             <SlidersHorizontal className="w-4 h-4 text-gold-500" />
             <span className="hidden sm:inline">Filters</span>
           </button>
+
 
           {/* Admin / Manager Direct Launch Button */}
           {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (

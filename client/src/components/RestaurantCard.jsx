@@ -10,7 +10,8 @@ import {
   Sparkles, 
   CheckCircle2, 
   Utensils,
-  Eye
+  Eye,
+  Flame
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
@@ -20,7 +21,8 @@ export const RestaurantCard = ({ restaurant }) => {
   const { openBookingModal, openDetailModal, selectedDate, partySize } = useReservation();
 
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const isFav = favorites.includes(restaurant._id);
+  const restaurantId = restaurant._id || restaurant.id;
+  const isFav = favorites.includes(restaurantId);
 
   const photos = restaurant.photos && restaurant.photos.length > 0
     ? restaurant.photos
@@ -68,17 +70,24 @@ export const RestaurantCard = ({ restaurant }) => {
         {/* Dark Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
 
-        {/* Division & Sub-district Badge */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full glass-panel border border-white/15 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
-          <MapPin className="w-3 h-3 text-gold-400" />
-          <span>{restaurant.subDistrict}, {restaurant.division}</span>
-        </div>
+        {/* Division & Sub-district Badge or Flash Offer Banner */}
+        {restaurant.offer?.hasOffer ? (
+          <div className="absolute top-3 left-3 flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-amber-600 via-crimson-600 to-rose-600 text-white text-[10px] font-extrabold tracking-wider shadow-lg animate-pulse">
+            <Flame className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+            <span>{restaurant.offer.discountPercent}% OFF • {restaurant.offer.tag || 'Flash Deal'}</span>
+          </div>
+        ) : (
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full glass-panel border border-white/15 text-[11px] font-bold text-white shadow-lg backdrop-blur-md">
+            <MapPin className="w-3 h-3 text-gold-400" />
+            <span>{restaurant.subDistrict}, {restaurant.division}</span>
+          </div>
+        )}
 
         {/* Favorite Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(restaurant._id);
+            toggleFavorite(restaurantId);
           }}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full glass-panel flex items-center justify-center transition-all ${
             isFav ? 'bg-crimson-500 text-white shadow-glow-gold' : 'text-slate-300 hover:text-white hover:bg-white/20'
@@ -87,6 +96,7 @@ export const RestaurantCard = ({ restaurant }) => {
         >
           <Heart className={`w-4 h-4 ${isFav ? 'fill-white stroke-white' : ''}`} />
         </button>
+
 
         {/* Carousel Navigation Arrows */}
         {photos.length > 1 && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -9,17 +9,18 @@ import {
   Car, 
   Sparkles, 
   Utensils, 
-  Shirt, 
-  Phone, 
-  Share2,
   CheckCircle2,
-  CalendarCheck
+  CalendarCheck,
+  MessageSquarePlus,
+  User,
+  Flame
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
+import { api } from '../services/api';
 
 export const RestaurantDetailModal = () => {
-  const { favorites, toggleFavorite } = useAuth();
+  const { user, isAuthenticated, openAuthModal, favorites, toggleFavorite } = useAuth();
   const {
     isDetailModalOpen,
     closeDetailModal,
@@ -27,16 +28,89 @@ export const RestaurantDetailModal = () => {
     openBookingModal,
     selectedDate,
     partySize,
+    showToast,
   } = useReservation();
 
-  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'about' | 'gallery'
+  const [activeTab, setActiveTab] = useState('menu'); // 'menu' | 'about' | 'reviews' | 'gallery'
+  const [reviewsList, setReviewsList] = useState([]);
+  const [userRating, setUserRating] = useState(5);
+  const [userComment, setUserComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [currentRating, setCurrentRating] = useState(4.8);
+  const [currentReviewsCount, setCurrentReviewsCount] = useState(120);
+
+  useEffect(() => {
+    if (isDetailModalOpen && detailRestaurant) {
+      setCurrentRating(detailRestaurant.rating || 4.8);
+      setCurrentReviewsCount(detailRestaurant.reviewsCount || 120);
+      setReviewsList(detailRestaurant.reviews || [
+        {
+          userName: 'Tanvir Ahmed',
+          rating: 5,
+          comment: 'Exceptional ambiance, world-class hospitality, and the artisanal kebabs were heavenly.',
+          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          userName: 'Nabila Karim',
+          rating: 5,
+          comment: 'One of the finest fine dining spots in Bangladesh. Reserving through TableTurn was instant!',
+          createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+        },
+      ]);
+    }
+  }, [isDetailModalOpen, detailRestaurant]);
 
   if (!isDetailModalOpen || !detailRestaurant) return null;
 
-  const isFav = favorites.includes(detailRestaurant._id);
+  const restaurantId = detailRestaurant._id || detailRestaurant.id;
+  const isFav = favorites.includes(restaurantId);
   const photos = detailRestaurant.photos || [
     'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
   ];
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      showToast('Please sign in to write a customer review', 'error');
+      openAuthModal('login');
+      return;
+    }
+
+    if (!userComment.trim()) {
+      showToast('Please enter your review feedback', 'error');
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const res = await api.addReview(restaurantId, {
+        rating: userRating,
+        comment: userComment.trim(),
+      });
+
+      if (res.success) {
+        showToast('Your review and rating have been posted!');
+        setReviewsList((prev) => [
+          {
+            userName: user.name || 'Verified Diner',
+            rating: userRating,
+            comment: userComment.trim(),
+            createdAt: new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+        if (res.data) {
+          setCurrentRating(res.data.rating);
+          setCurrentReviewsCount(res.data.reviewsCount);
+        }
+        setUserComment('');
+      }
+    } catch (err) {
+      showToast(err.message || 'Review submission failed', 'error');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -77,13 +151,21 @@ export const RestaurantDetailModal = () => {
 
             {/* Favorite Toggle */}
             <button
-              onClick={() => toggleFavorite(detailRestaurant._id)}
+              onClick={() => toggleFavorite(restaurantId)}
               className={`absolute top-4 right-16 w-9 h-9 rounded-full glass-panel flex items-center justify-center transition-colors ${
                 isFav ? 'bg-crimson-500 text-white' : 'text-white hover:bg-white/20'
               }`}
             >
               <Heart className={`w-4 h-4 ${isFav ? 'fill-white' : ''}`} />
             </button>
+
+            {/* Flash Offer Badge on Banner */}
+            {detailRestaurant.offer?.hasOffer && (
+              <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-600 via-crimson-600 to-rose-600 text-white text-xs font-extrabold shadow-glow-gold animate-pulse">
+                <Flame className="w-4 h-4 fill-amber-300 text-amber-300" />
+                <span>{detailRestaurant.offer.discountPercent}% OFF Flash Deal Active</span>
+              </div>
+            )}
 
             {/* Floating Title & Meta on Banner Bottom */}
             <div className="absolute bottom-4 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -96,7 +178,10 @@ export const RestaurantDetailModal = () => {
                     {detailRestaurant.subDistrict}
                   </span>
                   <span className="text-xs font-bold text-gold-400">
-                    {detailRestaurant.priceCategory || '৳৳'} (~৳{detailRestaurant.averageCostForTwo || 1500} for 2)
+                    ⭐ {currentRating} ({currentReviewsCount} Reviews)
+                  </span>
+                  <span className="text-xs font-bold text-slate-300">
+                    • ~৳{detailRestaurant.averageCostForTwo || 1500} for 2
                   </span>
                 </div>
                 <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
@@ -122,21 +207,34 @@ export const RestaurantDetailModal = () => {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="px-6 border-b border-white/10 flex items-center gap-6 bg-surface-200">
+          <div className="px-6 border-b border-white/10 flex items-center gap-4 sm:gap-6 bg-surface-200 overflow-x-auto shrink-0">
             <button
               onClick={() => setActiveTab('menu')}
-              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === 'menu'
                   ? 'border-gold-500 text-gold-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
               <Utensils className="w-3.5 h-3.5" />
-              <span>Signature Menu & Pricing (৳ BDT)</span>
+              <span>Signature Menu & Pricing</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab('reviews')}
+              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'reviews'
+                  ? 'border-gold-500 text-gold-400'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Star className="w-3.5 h-3.5 fill-gold-400 text-gold-400" />
+              <span>Reviews & Ratings ({reviewsList.length})</span>
+            </button>
+
             <button
               onClick={() => setActiveTab('about')}
-              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === 'about'
                   ? 'border-gold-500 text-gold-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -145,15 +243,16 @@ export const RestaurantDetailModal = () => {
               <Sparkles className="w-3.5 h-3.5" />
               <span>About & Ambiance</span>
             </button>
+
             <button
               onClick={() => setActiveTab('gallery')}
-              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+              className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${
                 activeTab === 'gallery'
                   ? 'border-gold-500 text-gold-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              <span>Photo Gallery ({photos.length})</span>
+              <span>Gallery ({photos.length})</span>
             </button>
           </div>
 
@@ -230,7 +329,92 @@ export const RestaurantDetailModal = () => {
               </div>
             )}
 
-            {/* TAB 2: ABOUT */}
+            {/* TAB 2: REVIEWS & RATINGS */}
+            {activeTab === 'reviews' && (
+              <div className="space-y-6">
+                {/* Write Review Box */}
+                <div className="p-4 rounded-2xl bg-surface-200 border border-gold-500/30 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gold-400 flex items-center gap-1.5">
+                    <MessageSquarePlus className="w-4 h-4" /> Share Your Dining Experience & Rating
+                  </h4>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-300 font-bold">Your Rating:</span>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setUserRating(star)}
+                          className="p-1 text-gold-400 hover:scale-125 transition-transform"
+                        >
+                          <Star className={`w-5 h-5 ${star <= userRating ? 'fill-gold-400 text-gold-400' : 'text-slate-600'}`} />
+                        </button>
+                      ))}
+                    </div>
+                    <span className="text-xs font-extrabold text-gold-400 font-mono">({userRating} / 5 Stars)</span>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    placeholder="Write your honest dining review (food quality, service, ambiance)..."
+                    value={userComment}
+                    onChange={(e) => setUserComment(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-surface-100 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                  />
+
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleReviewSubmit}
+                      disabled={submittingReview}
+                      className="px-5 py-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 font-bold text-xs shadow-glow-gold transition-all"
+                    >
+                      {submittingReview ? 'Posting Review...' : 'Post Customer Review'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* List of Verified Reviews */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Verified Customer Reviews ({reviewsList.length})
+                  </h4>
+
+                  {reviewsList.map((rev, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-surface-200 border border-white/5 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center font-bold text-xs">
+                            {rev.userName?.charAt(0) || 'U'}
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-white block">{rev.userName}</span>
+                            <span className="text-[10px] text-slate-400">
+                              {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Recent Diner'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-3.5 h-3.5 ${s <= rev.rating ? 'fill-gold-400 text-gold-400' : 'text-slate-600'}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-300 leading-relaxed italic">
+                        "{rev.comment}"
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: ABOUT */}
             {activeTab === 'about' && (
               <div className="space-y-4">
                 {/* Chef Note */}
@@ -286,7 +470,7 @@ export const RestaurantDetailModal = () => {
               </div>
             )}
 
-            {/* TAB 3: GALLERY */}
+            {/* TAB 4: GALLERY */}
             {activeTab === 'gallery' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {photos.map((photo, index) => (

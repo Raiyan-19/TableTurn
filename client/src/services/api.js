@@ -225,5 +225,91 @@ export const api = {
       throw err.response ? err.response.data : new Error('Failed to update reservation status');
     }
   },
+
+  async createRestaurant(payload) {
+    try {
+      const res = await apiClient.post('/admin/restaurants', payload);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to create restaurant');
+    }
+  },
+
+  async updateRestaurant(id, payload) {
+    try {
+      const res = await apiClient.put(`/admin/restaurants/${encodeURIComponent(id)}`, payload);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to update restaurant');
+    }
+  },
+
+  async deleteRestaurant(id) {
+    try {
+      const res = await apiClient.delete(`/admin/restaurants/${encodeURIComponent(id)}`);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to delete restaurant');
+    }
+  },
+
+  async toggleRestaurantOffer(id, offerData) {
+    try {
+      const res = await apiClient.patch(`/admin/restaurants/${encodeURIComponent(id)}/offer`, offerData);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to update restaurant offer');
+    }
+  },
+
+  // 5. Customer Reviews & Ratings
+  async addReview(restaurantId, reviewData) {
+    try {
+      const res = await apiClient.post(`/restaurants/${encodeURIComponent(restaurantId)}/reviews`, reviewData);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to post review');
+    }
+  },
+
+  async getRestaurantReviews(restaurantId) {
+    try {
+      const res = await apiClient.get(`/restaurants/${encodeURIComponent(restaurantId)}/reviews`);
+      return res.data;
+    } catch (err) {
+      return { success: true, data: [] };
+    }
+  },
+
+  // 6. User Profile & Favorites
+  async toggleFavorite(restaurantId) {
+    try {
+      const res = await apiClient.post(`/auth/favorites/${encodeURIComponent(restaurantId)}`);
+      return res.data;
+    } catch (err) {
+      // Local fallback
+      let favs = JSON.parse(localStorage.getItem('tableturn_favs') || '[]');
+      let isFav = false;
+      if (favs.includes(restaurantId)) {
+        favs = favs.filter((f) => f !== restaurantId);
+        isFav = false;
+      } else {
+        favs.push(restaurantId);
+        isFav = true;
+      }
+      localStorage.setItem('tableturn_favs', JSON.stringify(favs));
+      return { success: true, isFavorited: isFav, favorites: favs };
+    }
+  },
+
+  async updateProfile(profileData) {
+    try {
+      const res = await apiClient.put('/auth/profile', profileData);
+      return res.data;
+    } catch (err) {
+      throw err.response ? err.response.data : new Error('Failed to update profile');
+    }
+  },
 };
+
 

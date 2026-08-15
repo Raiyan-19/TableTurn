@@ -134,6 +134,21 @@ const restaurantSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
+    offer: {
+      hasOffer: { type: Boolean, default: false },
+      discountPercent: { type: Number, default: 0 },
+      tag: { type: String, default: '' },
+      expiryTime: { type: String, default: '11:00 PM' },
+    },
+    reviews: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        userName: { type: String, default: 'Verified Diner' },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, required: true, trim: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -141,6 +156,7 @@ const restaurantSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
 
 // Compound indexing for high performance multi-attribute discovery
 restaurantSchema.index({ division: 1, cuisineTypes: 1, priceCategory: 1 });

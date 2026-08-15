@@ -17,7 +17,12 @@ import {
   Utensils, 
   Filter,
   Sparkles,
-  QrCode
+  QrCode,
+  Plus,
+  Trash2,
+  Edit,
+  Flame,
+  Star
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -28,7 +33,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { showToast } = useReservation();
 
-  const [activeTab, setActiveTab] = useState('reservations'); // 'overview' | 'reservations' | 'restaurants' | 'lookup'
+  const [activeTab, setActiveTab] = useState('reservations'); // 'reservations' | 'overview' | 'lookup' | 'restaurants'
   const [reservations, setReservations] = useState([]);
   const [stats, setStats] = useState(null);
   const [restaurantsList, setRestaurantsList] = useState([]);
@@ -45,6 +50,19 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
   const [lookupError, setLookupError] = useState('');
   const [lookupLoading, setLookupLoading] = useState(false);
 
+  // Add Restaurant Modal State
+  const [isAddRestaurantOpen, setIsAddRestaurantOpen] = useState(false);
+  const [newRestName, setNewRestName] = useState('');
+  const [newRestTagline, setNewRestTagline] = useState('');
+  const [newRestDivision, setNewRestDivision] = useState('Dhaka');
+  const [newRestSubDistrict, setNewRestSubDistrict] = useState('Gulshan');
+  const [newRestAddress, setNewRestAddress] = useState('');
+  const [newRestCuisines, setNewRestCuisines] = useState('Bengali Fine Dining, Pan-Asian');
+  const [newRestPrice, setNewRestPrice] = useState('৳৳');
+  const [newRestCostForTwo, setNewRestCostForTwo] = useState(1600);
+  const [newRestPhoto, setNewRestPhoto] = useState('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80');
+  const [addingRestaurant, setAddingRestaurant] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       loadDashboardData();
@@ -54,7 +72,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      // 1. Load All Platform Reservations
       const params = {};
       if (filterDivision !== 'All') params.division = filterDivision;
       if (filterStatus !== 'all') params.status = filterStatus;
@@ -65,13 +82,11 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
         setReservations(resvRes.data);
       }
 
-      // 2. Load Stats
       const statsRes = await api.getAdminStats();
       if (statsRes.success && statsRes.data) {
         setStats(statsRes.data);
       }
 
-      // 3. Load Restaurants
       const restRes = await api.getRestaurants();
       if (restRes.success && Array.isArray(restRes.data)) {
         setRestaurantsList(restRes.data);
@@ -88,7 +103,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
     try {
       await api.updateAdminReservationStatus(id, newStatus);
       showToast(`Reservation status updated to '${newStatus}'!`);
-      // Update local state immediately
       setReservations((prev) =>
         prev.map((r) => (r._id === id || r.reservationCode === id ? { ...r, status: newStatus } : r))
       );
@@ -120,6 +134,84 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
       setLookupError(err.message || 'Lookup failed. Please verify code.');
     } finally {
       setLookupLoading(false);
+    }
+  };
+
+  const handleCreateRestaurant = async (e) => {
+    e.preventDefault();
+    if (!newRestName.trim() || !newRestAddress.trim()) {
+      showToast('Please enter restaurant name and full address', 'error');
+      return;
+    }
+
+    setAddingRestaurant(true);
+    try {
+      const payload = {
+        name: newRestName.trim(),
+        tagline: newRestTagline.trim() || 'Curated dining experience in Bangladesh',
+        division: newRestDivision,
+        subDistrict: newRestSubDistrict.trim(),
+        address: newRestAddress.trim(),
+        cuisineTypes: newRestCuisines.split(',').map((c) => c.trim()).filter(Boolean),
+        priceCategory: newRestPrice,
+        averageCostForTwo: Number(newRestCostForTwo) || 1500,
+        photos: [newRestPhoto.trim()],
+        features: ['Halal Certified', 'Air Conditioned', 'WiFi'],
+        signatureDishes: [
+          { name: 'Chef Special Platter', priceBDT: 1200, description: 'Artisanal grilled prime selection', isChefSpecial: true },
+        ],
+      };
+
+      const res = await api.createRestaurant(payload);
+      if (res.success) {
+        showToast(`Restaurant '${res.data.name}' successfully listed!`);
+        setIsAddRestaurantOpen(false);
+        setNewRestName('');
+        setNewRestTagline('');
+        setNewRestAddress('');
+        loadDashboardData();
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to create restaurant', 'error');
+    } finally {
+      setAddingRestaurant(false);
+    }
+  };
+
+  const handleDeleteRestaurant = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete '${name}' from TableTurn?`)) {
+      return;
+    }
+    try {
+      const res = await api.deleteRestaurant(id);
+      if (res.success) {
+        showToast(`Restaurant '${name}' removed successfully`);
+        setRestaurantsList((prev) => prev.filter((r) => r._id !== id && r.id !== id));
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to delete restaurant', 'error');
+    }
+  };
+
+  const handleToggleOffer = async (id, currentOffer, name) => {
+    try {
+      const newHasOffer = !currentOffer?.hasOffer;
+      const offerPayload = {
+        hasOffer: newHasOffer,
+        discountPercent: newHasOffer ? 30 : 0,
+        tag: newHasOffer ? '30% OFF Flash Deal' : '',
+        expiryTime: '11:00 PM',
+      };
+
+      const res = await api.toggleRestaurantOffer(id, offerPayload);
+      if (res.success) {
+        showToast(newHasOffer ? `30% OFF Flash Deal activated for ${name}!` : `Flash Deal deactivated for ${name}`);
+        setRestaurantsList((prev) =>
+          prev.map((r) => (r._id === id || r.id === id ? { ...r, offer: offerPayload } : r))
+        );
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to update offer', 'error');
     }
   };
 
@@ -185,9 +277,9 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-2 pt-4 pb-3 border-b border-white/5 shrink-0 overflow-x-auto">
             {[
               { id: 'reservations', label: 'All Reservations', icon: Users },
+              { id: 'restaurants', label: 'Venues & Flash Offers', icon: Building2 },
               { id: 'overview', label: 'Analytics & KPIs', icon: TrendingUp },
               { id: 'lookup', label: 'Host Stand Scanner', icon: QrCode },
-              { id: 'restaurants', label: 'Venues Directory', icon: Building2 },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -309,11 +401,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                             <td className="px-4 py-3">
                               <span className="font-bold text-white">{resv.partySize} Guests</span>
                               <span className="text-[10px] text-slate-400 block">{resv.seatingArea}</span>
-                              {resv.occasion && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-slate-300 inline-block mt-1">
-                                  {resv.occasion}
-                                </span>
-                              )}
                             </td>
 
                             <td className="px-4 py-3">
@@ -334,7 +421,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                                   <button
                                     onClick={() => handleStatusUpdate(resv._id || resv.reservationCode, 'seated')}
                                     className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[10px] font-bold border border-emerald-500/40 transition-colors"
-                                    title="Seat table and check in guest"
                                   >
                                     Seat Guest
                                   </button>
@@ -343,7 +429,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                                   <button
                                     onClick={() => handleStatusUpdate(resv._id || resv.reservationCode, 'confirmed')}
                                     className="px-2.5 py-1 rounded-lg bg-gold-500/20 hover:bg-gold-500/30 text-gold-300 text-[10px] font-bold border border-gold-500/40 transition-colors"
-                                    title="Mark confirmed"
                                   >
                                     Confirm
                                   </button>
@@ -352,7 +437,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                                   <button
                                     onClick={() => handleStatusUpdate(resv._id || resv.reservationCode, 'cancelled')}
                                     className="px-2.5 py-1 rounded-lg bg-crimson-500/20 hover:bg-crimson-500/30 text-crimson-300 text-[10px] font-bold border border-crimson-500/40 transition-colors"
-                                    title="Cancel reservation"
                                   >
                                     Cancel
                                   </button>
@@ -368,10 +452,99 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            {/* ================= TAB 2: OVERVIEW & ANALYTICS ================= */}
+            {/* ================= TAB 2: VENUES & RESTAURANT MANAGEMENT ================= */}
+            {activeTab === 'restaurants' && (
+              <div className="space-y-4">
+                {/* Top Action Bar */}
+                <div className="flex items-center justify-between pb-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                      Partner Dining Venues ({restaurantsList.length})
+                    </h3>
+                    <p className="text-xs text-slate-400">Manage listings, menu highlights & last-minute flash deals</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsAddRestaurantOpen(true)}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 font-bold text-xs shadow-glow-gold flex items-center gap-1.5 transition-all"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    <span>List New Restaurant</span>
+                  </button>
+                </div>
+
+                {/* Grid of Restaurants */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {restaurantsList.map((rest) => {
+                    const restId = rest._id || rest.id;
+                    const hasOffer = rest.offer?.hasOffer;
+
+                    return (
+                      <div
+                        key={restId}
+                        className="p-4 rounded-2xl bg-surface-200 border border-white/10 flex flex-col justify-between space-y-3 group hover:border-gold-500/40 transition-all shadow-md"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                              {rest.division}
+                            </span>
+                            <span className="text-xs font-bold text-white flex items-center gap-1">
+                              <Star className="w-3.5 h-3.5 fill-gold-400 text-gold-400" /> {rest.rating || 4.8}
+                            </span>
+                          </div>
+
+                          <h4 className="text-sm font-bold text-white mt-2 group-hover:text-gold-300 transition-colors line-clamp-1">
+                            {rest.name}
+                          </h4>
+                          <p className="text-[11px] text-slate-400 line-clamp-1">{rest.address}</p>
+
+                          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] text-slate-300 bg-white/5 px-2 py-0.5 rounded">
+                              ~৳{rest.averageCostForTwo} for two
+                            </span>
+                            <span className="text-[10px] text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded">
+                              {rest.priceCategory || '৳৳'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Flash Deal & Action Buttons */}
+                        <div className="pt-3 border-t border-white/5 space-y-2">
+                          {/* Flash Deal Toggle */}
+                          <button
+                            onClick={() => handleToggleOffer(restId, rest.offer, rest.name)}
+                            className={`w-full py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                              hasOffer
+                                ? 'bg-gradient-to-r from-amber-600 to-crimson-600 text-white shadow-glow-gold'
+                                : 'bg-surface-100 hover:bg-surface-50 text-slate-300 border border-white/5'
+                            }`}
+                          >
+                            <Flame className={`w-3.5 h-3.5 ${hasOffer ? 'fill-amber-300 text-amber-300' : 'text-slate-400'}`} />
+                            <span>{hasOffer ? `Active: 30% OFF Flash Deal` : `Enable 30% Flash Offer`}</span>
+                          </button>
+
+                          {/* Delete Action */}
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => handleDeleteRestaurant(restId, rest.name)}
+                              className="text-[11px] text-crimson-400 hover:text-crimson-300 font-semibold flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Delete Venue</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ================= TAB 3: OVERVIEW & ANALYTICS ================= */}
             {activeTab === 'overview' && (
               <div className="space-y-5">
-                {/* Metric Cards Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                   <div className="p-4 rounded-2xl bg-surface-200 border border-white/10">
                     <span className="text-[10px] font-bold text-slate-400 uppercase">Total Reservations</span>
@@ -398,7 +571,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Division Distribution */}
                 <div className="p-5 rounded-2xl bg-surface-200 border border-white/10">
                   <h4 className="text-xs font-bold text-gold-400 uppercase tracking-wider mb-3">
                     Reservations Distribution by Bangladesh Division
@@ -418,7 +590,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            {/* ================= TAB 3: HOST STAND SCANNER ================= */}
+            {/* ================= TAB 4: HOST STAND SCANNER ================= */}
             {activeTab === 'lookup' && (
               <div className="max-w-xl mx-auto space-y-4">
                 <form onSubmit={handleLookup} className="space-y-2">
@@ -490,7 +662,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                       </div>
                     </div>
 
-                    {/* Action */}
                     <div className="pt-2 flex justify-end gap-2">
                       <button
                         onClick={() => handleStatusUpdate(lookupResult._id || lookupResult.reservationCode, 'seated')}
@@ -502,29 +673,6 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* ================= TAB 4: RESTAURANTS DIRECTORY ================= */}
-            {activeTab === 'restaurants' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {restaurantsList.map((rest) => (
-                  <div key={rest._id || rest.id} className="p-4 rounded-2xl bg-surface-200 border border-white/10 flex flex-col justify-between space-y-3">
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-gold-400 uppercase">{rest.division}</span>
-                        <span className="text-xs font-bold text-white">⭐ {rest.rating}</span>
-                      </div>
-                      <h4 className="text-sm font-bold text-white mt-1">{rest.name}</h4>
-                      <p className="text-[11px] text-slate-400">{rest.address}</p>
-                    </div>
-
-                    <div className="pt-2 border-t border-white/5 text-[11px] flex items-center justify-between text-slate-300">
-                      <span>Avg: ৳{rest.averageCostForTwo} for two</span>
-                      <span className="text-gold-400 font-semibold">{rest.cuisineTypes?.slice(0, 2).join(', ')}</span>
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
 
@@ -540,6 +688,160 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
 
         </motion.div>
       </div>
+
+      {/* ================= MODAL: ADD NEW RESTAURANT ================= */}
+      {isAddRestaurantOpen && (
+        <div className="fixed inset-0 z-60 overflow-y-auto flex items-center justify-center p-4">
+          <div 
+            onClick={() => setIsAddRestaurantOpen(false)}
+            className="fixed inset-0 bg-black/85 backdrop-blur-md" 
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative bg-surface-300 rounded-3xl p-6 border border-gold-500/50 max-w-xl w-full shadow-2xl z-10 max-h-[90vh] overflow-y-auto space-y-4"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gold-400">Admin Restaurant CRUD</span>
+                <h3 className="text-lg font-bold text-white">List New Partner Restaurant</h3>
+              </div>
+              <button
+                onClick={() => setIsAddRestaurantOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateRestaurant} className="space-y-3.5 text-xs">
+              <div>
+                <label className="text-slate-300 font-bold block mb-1">Restaurant Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. The Glasshouse Fine Dining"
+                  value={newRestName}
+                  onChange={(e) => setNewRestName(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-300 font-bold block mb-1">Tagline</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Modern artisanal Pan-Asian cuisine"
+                  value={newRestTagline}
+                  onChange={(e) => setNewRestTagline(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-300 font-bold block mb-1">Division *</label>
+                  <select
+                    value={newRestDivision}
+                    onChange={(e) => setNewRestDivision(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white focus:outline-none"
+                  >
+                    {BANGLADESH_DIVISIONS.map((d) => (
+                      <option key={d} value={d} className="bg-slate-900">{d}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-bold block mb-1">Neighborhood / Zone *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Gulshan 2, GEC, Zindabazar"
+                    value={newRestSubDistrict}
+                    onChange={(e) => setNewRestSubDistrict(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-300 font-bold block mb-1">Full Street Address *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Road 45, House 12, Gulshan 2, Dhaka"
+                  value={newRestAddress}
+                  onChange={(e) => setNewRestAddress(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-300 font-bold block mb-1">Price Tier & Cost for Two (৳)</label>
+                  <div className="flex gap-2">
+                    <select
+                      value={newRestPrice}
+                      onChange={(e) => setNewRestPrice(e.target.value)}
+                      className="p-2.5 rounded-xl bg-surface-200 border border-white/10 text-gold-400 font-bold"
+                    >
+                      <option value="৳">৳ (Budget)</option>
+                      <option value="৳৳">৳৳ (Moderate)</option>
+                      <option value="৳৳৳">৳৳৳ (Fine Dining)</option>
+                      <option value="৳৳৳৳">৳৳৳৳ (Luxury)</option>
+                    </select>
+                    <input
+                      type="number"
+                      value={newRestCostForTwo}
+                      onChange={(e) => setNewRestCostForTwo(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-bold block mb-1">Cuisines (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Bengali, Continental, Steakhouse"
+                    value={newRestCuisines}
+                    onChange={(e) => setNewRestCuisines(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-300 font-bold block mb-1">Photo URL</label>
+                <input
+                  type="text"
+                  value={newRestPhoto}
+                  onChange={(e) => setNewRestPhoto(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-surface-200 border border-white/10 text-white text-[11px]"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setIsAddRestaurantOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-surface-100 hover:bg-surface-50 text-slate-300 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={addingRestaurant}
+                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 text-slate-950 font-bold shadow-glow-gold"
+                >
+                  {addingRestaurant ? 'Listing Venue...' : 'Save & Publish Listing'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </AnimatePresence>
   );
 };

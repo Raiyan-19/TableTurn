@@ -14,6 +14,7 @@ import { MyBookingsDrawer } from './components/MyBookingsDrawer';
 import { AuthModal } from './components/AuthModal';
 import { HostPortalModal } from './components/HostPortalModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
+import { ProfileEditModal } from './components/ProfileEditModal';
 import { Footer } from './components/Footer';
 
 // Toast Notification Overlay
@@ -35,7 +36,7 @@ const ToastNotification = () => {
         ) : (
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
         )}
-        <span className="text-xs font-bold text-white max-w-xs">{toast.message}</span>
+        <span className="text-xs font-bold text-slate-900 dark:text-white max-w-xs">{toast.message}</span>
       </motion.div>
     </AnimatePresence>
   );
@@ -45,11 +46,10 @@ function MainLayout() {
   const { isHostPortalOpen, setIsHostPortalOpen, isAdminModalOpen, setIsAdminModalOpen } = useReservation();
 
   return (
-    <div className="min-h-screen flex flex-col master-gradient-bg text-slate-900 dark:text-slate-100 selection:bg-gold-500 selection:text-black transition-colors duration-300">
+    <div className="min-h-screen flex flex-col master-gradient-bg text-slate-900 dark:text-slate-100 selection:bg-gold-500 selection:text-black transition-colors duration-300 w-full max-w-full overflow-x-hidden">
       <Navbar />
 
-
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
         <HeroSection />
         <DivisionQuickSwitcher />
         <RestaurantGrid />
@@ -62,6 +62,7 @@ function MainLayout() {
       <RestaurantDetailModal />
       <MyBookingsDrawer />
       <AuthModal />
+      <ProfileEditModal />
       <HostPortalModal isOpen={isHostPortalOpen} onClose={() => setIsHostPortalOpen(false)} />
       <AdminDashboardModal isOpen={isAdminModalOpen} onClose={() => setIsAdminModalOpen(false)} />
       <ToastNotification />

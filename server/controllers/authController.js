@@ -301,17 +301,41 @@ const toggleFavorite = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, phone, avatar } = req.body;
+    const { name, phone, avatar, password, currentPassword } = req.body;
 
     if (getDBStatus()) {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).select('+password');
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
 
-      if (name) user.name = name.trim();
-      if (phone) user.phone = phone.trim();
-      if (avatar) user.avatar = avatar;
+      if (name && name.trim()) user.name = name.trim();
+      
+      if (phone && phone.trim()) {
+        const bdPhoneRegex = /^(?:\+8801|01)[3-9]\d{8}$/;
+        if (!bdPhoneRegex.test(phone.trim())) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid Bangladeshi phone number. Format should be +88017XXXXXXXX or 017XXXXXXXX',
+          });
+        }
+        user.phone = phone.trim();
+      }
+
+      if (avatar && avatar.trim()) user.avatar = avatar.trim();
+
+      if (password && password.trim()) {
+        if (password.trim().length < 6) {
+          return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+        }
+        if (currentPassword) {
+          const isMatch = await user.matchPassword(currentPassword);
+          if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Current password does not match' });
+          }
+        }
+        user.password = password.trim();
+      }
 
       await user.save();
       return res.json({
@@ -328,16 +352,28 @@ const updateProfile = async (req, res) => {
         },
       });
     } else {
-      const user = memoryUsers.find((u) => u._id === userId);
+      const user = memoryUsers.find((u) => u._id === userId || u.email === req.user.email);
       if (user) {
-        if (name) user.name = name;
-        if (phone) user.phone = phone;
-        if (avatar) user.avatar = avatar;
+        if (name && name.trim()) user.name = name.trim();
+        if (phone && phone.trim()) user.phone = phone.trim();
+        if (avatar && avatar.trim()) user.avatar = avatar.trim();
+        if (password && password.trim()) {
+          user.passwordHash = bcrypt.hashSync(password.trim(), 8);
+        }
       }
+      const updatedUser = user ? {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+      } : req.user;
+
       return res.json({
         success: true,
         message: 'Profile updated successfully',
-        user: user || req.user,
+        user: updatedUser,
       });
     }
   } catch (error) {

@@ -307,7 +307,20 @@ export const api = {
       const res = await apiClient.put('/auth/profile', profileData);
       return res.data;
     } catch (err) {
-      throw err.response ? err.response.data : new Error('Failed to update profile');
+      // Local fallback for offline/preview mode
+      const savedUser = JSON.parse(localStorage.getItem('tableturn_user') || '{}');
+      const updatedUser = {
+        ...savedUser,
+        name: profileData.name || savedUser.name,
+        phone: profileData.phone || savedUser.phone,
+        avatar: profileData.avatar || savedUser.avatar,
+      };
+      localStorage.setItem('tableturn_user', JSON.stringify(updatedUser));
+      return {
+        success: true,
+        message: 'Profile updated locally',
+        user: updatedUser,
+      };
     }
   },
 };

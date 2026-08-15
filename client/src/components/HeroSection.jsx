@@ -284,16 +284,16 @@ export const HeroSection = () => {
   } = useReservation();
 
   return (
-    <section className="relative pt-12 pb-20 overflow-hidden cyber-grid-bg transition-colors duration-300">
+    <section className="relative pt-8 sm:pt-12 pb-16 sm:pb-20 overflow-hidden cyber-grid-bg transition-colors duration-300 w-full max-w-full">
       
       {/* Background Ambient Radial Glow */}
-      <div className="absolute top-1/4 left-1/3 w-[650px] h-[650px] bg-gold-500/10 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-subtle" />
-      <div className="absolute top-1/2 right-1/4 w-[550px] h-[550px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/3 w-[320px] sm:w-[650px] h-[320px] sm:h-[650px] bg-gold-500/10 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none -z-10 animate-pulse-subtle" />
+      <div className="absolute top-1/2 right-1/4 w-[280px] sm:w-[550px] h-[280px] sm:h-[550px] bg-emerald-500/8 rounded-full blur-[90px] sm:blur-[120px] pointer-events-none -z-10" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         
         {/* Main Hero Header Area */}
-        <div className="relative min-h-[400px] flex flex-col items-center justify-center text-center">
+        <div className="relative min-h-[360px] sm:min-h-[400px] flex flex-col items-center justify-center text-center">
           
           {/* Seamless Theme-Adaptive 3D Constellation Sphere */}
           <div className="absolute -left-16 lg:-left-6 top-1/2 -translate-y-1/2 w-72 h-72 sm:w-96 sm:h-96 pointer-events-none z-0 hidden md:block">
@@ -304,10 +304,10 @@ export const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 text-[11px] font-mono uppercase tracking-widest text-amber-700 dark:text-gold-400 mb-6 shadow-sm backdrop-blur-md relative z-20"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 text-[10px] sm:text-[11px] font-mono uppercase tracking-normal sm:tracking-widest text-amber-700 dark:text-gold-400 mb-5 sm:mb-6 shadow-sm backdrop-blur-md relative z-20 max-w-[94vw] text-center leading-snug"
           >
-            <Radio className="w-3.5 h-3.5 text-amber-500 dark:text-gold-500 animate-pulse" />
-            <span>Non-monetary Academic & Hospitality Dining Protocol</span>
+            <Radio className="w-3.5 h-3.5 text-amber-500 dark:text-gold-500 animate-pulse shrink-0" />
+            <span className="break-words">Non-monetary Academic & Hospitality Dining Protocol</span>
           </motion.div>
 
           {/* Main Hero Headline */}
@@ -315,7 +315,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 dark:text-white uppercase leading-[1.06] max-w-5xl relative z-20"
+            className="font-display text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 dark:text-white uppercase leading-[1.08] max-w-5xl relative z-20 px-1 break-words"
           >
             RESERVE A TABLE. <br />
             GET A TABLE. <span className="font-light italic text-slate-600 dark:text-slate-400 normal-case">Save the Night.</span>
@@ -326,7 +326,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mt-5 leading-relaxed relative z-20"
+            className="text-xs sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mt-4 sm:mt-5 leading-relaxed relative z-20 px-2"
           >
             Your city's premier dining spots already survived the rush. Discover verified table allocations, 
             rate culinary experiences, and reserve across all 8 Bangladesh divisions.
@@ -337,14 +337,14 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4 relative z-20"
+            className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto relative z-20"
           >
             <button
               onClick={() => {
                 const gridElement = document.getElementById('restaurant-grid-section');
                 if (gridElement) gridElement.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 py-3.5 rounded-full bg-slate-950 dark:bg-white/10 hover:bg-gold-500 dark:hover:bg-gold-500 text-white hover:text-slate-950 dark:hover:text-slate-950 font-extrabold text-xs tracking-wider uppercase border border-slate-800 dark:border-white/20 transition-all flex items-center gap-2 shadow-xl hover:shadow-glow-gold hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-full bg-slate-950 dark:bg-white/10 hover:bg-gold-500 dark:hover:bg-gold-500 text-white hover:text-slate-950 dark:hover:text-slate-950 font-extrabold text-xs tracking-wider uppercase border border-slate-800 dark:border-white/20 transition-all flex items-center justify-center gap-2 shadow-xl hover:shadow-glow-gold hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Explore Dining Bazaar</span>
               <ArrowRight className="w-4 h-4" />
@@ -352,14 +352,14 @@ export const HeroSection = () => {
 
             <button
               onClick={() => setIsHostPortalOpen(true)}
-              className="px-8 py-3.5 rounded-full bg-white/90 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-slate-200 font-bold text-xs tracking-wider uppercase border border-slate-300 dark:border-white/15 transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-full bg-white/90 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-slate-200 font-bold text-xs tracking-wider uppercase border border-slate-300 dark:border-white/15 transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] shadow-sm justify-center flex items-center"
             >
               Host Stand Scanner
             </button>
           </motion.div>
 
           {/* Telemetry HUD Bar */}
-          <div className="mt-8 flex items-center justify-center gap-6 sm:gap-10 text-[11px] font-mono text-slate-600 dark:text-slate-400 relative z-20">
+          <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-10 text-[10px] sm:text-[11px] font-mono text-slate-600 dark:text-slate-400 relative z-20 px-2">
             <span className="flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
               <span className="font-bold">8 DIVISIONS ACTIVE</span>

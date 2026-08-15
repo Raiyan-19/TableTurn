@@ -39,6 +39,7 @@ export const ReservationProvider = ({ children }) => {
   // Host Stand & Admin Portal Modal States
   const [isHostPortalOpen, setIsHostPortalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Toast Notification State
   const [toast, setToast] = useState(null);
@@ -149,6 +150,8 @@ export const ReservationProvider = ({ children }) => {
         setIsHostPortalOpen,
         isAdminModalOpen,
         setIsAdminModalOpen,
+        isProfileModalOpen,
+        setIsProfileModalOpen,
         myBookings,
         setMyBookings,
         fetchMyBookings,

@@ -22,7 +22,8 @@ import {
   Trash2,
   Edit,
   Flame,
-  Star
+  Star,
+  User
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -31,7 +32,7 @@ import { BANGLADESH_DIVISIONS } from '../data/mockData';
 
 export const AdminDashboardModal = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-  const { showToast } = useReservation();
+  const { showToast, setIsProfileModalOpen } = useReservation();
 
   const [activeTab, setActiveTab] = useState('reservations'); // 'reservations' | 'overview' | 'lookup' | 'restaurants'
   const [reservations, setReservations] = useState([]);
@@ -256,6 +257,15 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/30 text-xs font-bold text-amber-700 dark:text-gold-400 transition-colors shadow-sm"
+                title="Edit Account & Personal Information"
+              >
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin Profile</span>
+              </button>
+
               <button
                 onClick={loadDashboardData}
                 disabled={loading}

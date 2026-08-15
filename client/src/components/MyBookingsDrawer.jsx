@@ -83,7 +83,7 @@ export const MyBookingsDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsBookingsDrawerOpen(false)}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Drawer Panel */}
@@ -92,36 +92,36 @@ export const MyBookingsDrawer = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative w-full max-w-md bg-surface-300 border-l border-white/10 h-full p-5 sm:p-6 flex flex-col justify-between overflow-hidden shadow-2xl z-10"
+            className="relative w-full max-w-md bg-white dark:bg-[#0B0F19] border-l border-slate-200 dark:border-white/10 h-full p-5 sm:p-6 flex flex-col justify-between overflow-hidden shadow-2xl z-10 transition-colors duration-200"
           >
             {/* Top Header */}
             <div>
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-400">
+                  <div className="w-9 h-9 rounded-xl bg-gold-500/10 flex items-center justify-center text-amber-600 dark:text-gold-400">
                     <CalendarCheck className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">My Dining Center</h3>
-                    <p className="text-[11px] text-slate-400">Bookings, QR passes & saved venues</p>
+                    <h3 className="text-base font-black text-slate-950 dark:text-white">My Dining Center</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Bookings, QR passes & saved venues</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsBookingsDrawerOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white"
+                  className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Tabs */}
-              <div className="mt-4 flex items-center gap-2 p-1 rounded-xl bg-surface-200 border border-white/5">
+              <div className="mt-4 flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                 <button
                   onClick={() => setDrawerTab('bookings')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                     drawerTab === 'bookings'
-                      ? 'bg-gold-500 text-slate-950 shadow-glow-gold'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-slate-950 text-white dark:bg-gold-500 dark:text-slate-950 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <Calendar className="w-3.5 h-3.5" />
@@ -132,8 +132,8 @@ export const MyBookingsDrawer = () => {
                   onClick={() => setDrawerTab('favorites')}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                     drawerTab === 'favorites'
-                      ? 'bg-gold-500 text-slate-950 shadow-glow-gold'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-slate-950 text-white dark:bg-gold-500 dark:text-slate-950 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   <Heart className="w-3.5 h-3.5 fill-current" />
@@ -161,20 +161,20 @@ export const MyBookingsDrawer = () => {
                           key={booking._id || booking.reservationCode}
                           className={`p-4 rounded-2xl border transition-all mb-3 ${
                             isConfirmed
-                              ? 'bg-surface-200 border-gold-500/30'
-                              : 'bg-white/5 border-white/5 opacity-70'
+                              ? 'bg-slate-50 border-amber-300/80 dark:bg-white/5 dark:border-gold-500/30'
+                              : 'bg-slate-100 border-slate-200 dark:bg-white/5 dark:border-white/5 opacity-70'
                           }`}
                         >
                           {/* Reference Code & Status */}
-                          <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-white/5">
-                            <span className="font-mono text-xs font-extrabold text-gold-400">
+                          <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200 dark:border-white/5">
+                            <span className="font-mono text-xs font-extrabold text-amber-700 dark:text-gold-400">
                               {booking.reservationCode}
                             </span>
                             <span
                               className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                                 isConfirmed
-                                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                  : 'bg-crimson-500/20 text-crimson-400'
+                                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                                  : 'bg-crimson-500/15 text-crimson-700 dark:text-crimson-400'
                               }`}
                             >
                               {booking.status}
@@ -183,51 +183,51 @@ export const MyBookingsDrawer = () => {
 
                           {/* Restaurant Title */}
                           <div className="mt-2.5">
-                            <h4 className="text-sm font-bold text-white">
+                            <h4 className="text-sm font-bold text-slate-950 dark:text-white">
                               {booking.restaurantName}
                             </h4>
-                            <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                              <MapPin className="w-3 h-3 text-gold-400" />
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                              <MapPin className="w-3 h-3 text-amber-500 dark:text-gold-400" />
                               {booking.division} Division
                             </p>
                           </div>
 
                           {/* Details Grid */}
-                          <div className="mt-3 grid grid-cols-2 gap-2 text-xs p-2.5 rounded-xl bg-black/40 border border-white/5">
-                            <div className="flex items-center gap-1.5 text-slate-300">
-                              <Calendar className="w-3.5 h-3.5 text-gold-400" />
+                          <div className="mt-3 grid grid-cols-2 gap-2 text-xs p-2.5 rounded-xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                            <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                              <Calendar className="w-3.5 h-3.5 text-amber-600 dark:text-gold-400" />
                               <span>{booking.date}</span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-slate-300">
-                              <Clock className="w-3.5 h-3.5 text-gold-400" />
+                            <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                              <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-gold-400" />
                               <span>{booking.timeSlot}</span>
                             </div>
-                            <div className="flex items-center gap-1.5 text-slate-300">
-                              <Users className="w-3.5 h-3.5 text-gold-400" />
+                            <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                              <Users className="w-3.5 h-3.5 text-amber-600 dark:text-gold-400" />
                               <span>{booking.partySize} Guests</span>
                             </div>
-                            <div className="text-[11px] text-slate-400 truncate">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                               Area: {booking.seatingArea}
                             </div>
                           </div>
 
                           {/* Actions */}
                           {isConfirmed && (
-                            <div className="mt-3.5 pt-3 border-t border-white/5 flex items-center justify-between gap-2">
+                            <div className="mt-3.5 pt-3 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-2">
                               <button
                                 onClick={() => setActiveQrModal(booking)}
-                                className="px-3 py-1.5 rounded-lg bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 text-xs font-bold flex items-center gap-1 border border-gold-500/30"
+                                className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-gold-400 text-xs font-bold flex items-center gap-1 border border-amber-500/30"
                               >
                                 <QrCode className="w-3.5 h-3.5" />
-                                View QR Pass
+                                <span>Show QR Pass</span>
                               </button>
 
                               <button
                                 onClick={() => handleCancelBooking(booking._id || booking.reservationCode)}
-                                className="text-xs text-crimson-400 hover:text-crimson-300 font-semibold flex items-center gap-1 p-1"
+                                className="px-2.5 py-1.5 rounded-lg text-crimson-600 dark:text-crimson-400 hover:bg-crimson-500/10 text-xs font-bold flex items-center gap-1 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
-                                Cancel
+                                <span>Cancel</span>
                               </button>
                             </div>
                           )}
@@ -235,11 +235,11 @@ export const MyBookingsDrawer = () => {
                       );
                     })
                   ) : (
-                    <div className="p-8 text-center rounded-2xl bg-surface-200/50 border border-white/5">
-                      <CalendarCheck className="w-10 h-10 text-slate-500 mx-auto mb-2" />
-                      <p className="text-xs font-bold text-slate-300">No active reservations yet</p>
-                      <p className="text-[11px] text-slate-500 mt-1">
-                        Select a time slot on any dining card to reserve your table.
+                    <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+                      <CalendarCheck className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                      <p className="text-sm font-bold text-slate-950 dark:text-white">No Active Reservations</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Explore restaurants across Bangladesh and book your table instantly.
                       </p>
                     </div>
                   )}
@@ -250,52 +250,51 @@ export const MyBookingsDrawer = () => {
               {drawerTab === 'favorites' && (
                 <div>
                   {favoriteRestaurants.length > 0 ? (
-                    favoriteRestaurants.map((restaurant) => (
+                    favoriteRestaurants.map((res) => (
                       <div
-                        key={restaurant._id || restaurant.id}
-                        className="p-3 rounded-2xl bg-surface-200 border border-white/10 flex items-center gap-3 mb-3 group hover:border-gold-500/30 transition-all"
+                        key={res._id || res.id}
+                        onClick={() => {
+                          setIsBookingsDrawerOpen(false);
+                          openDetailModal(res);
+                        }}
+                        className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-gold-500/40 cursor-pointer transition-all flex items-center gap-3 mb-2.5"
                       >
                         <img
-                          src={restaurant.photos?.[0] || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80'}
-                          alt={restaurant.name}
-                          className="w-16 h-16 rounded-xl object-cover shrink-0"
+                          src={res.photos?.[0] || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80'}
+                          alt={res.name}
+                          className="w-16 h-16 rounded-xl object-cover"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-gold-400">{restaurant.division}</span>
-                            <span className="text-[10px] font-bold text-white flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-gold-400 text-gold-400" /> {restaurant.rating || 4.8}
+                          <h4 className="text-xs font-bold text-slate-950 dark:text-white truncate">{res.name}</h4>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 text-amber-600 dark:text-gold-400" />
+                            {res.subDistrict}, {res.division}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-gold-400">
+                              <Star className="w-3 h-3 fill-current" />
+                              {res.rating || 4.8}
                             </span>
-                          </div>
-                          <h4 className="text-xs font-bold text-white truncate">{restaurant.name}</h4>
-                          <p className="text-[10px] text-slate-400 truncate">{restaurant.subDistrict}</p>
-                          
-                          <div className="mt-2 flex items-center gap-2">
-                            <button
-                              onClick={() => {
-                                setIsBookingsDrawerOpen(false);
-                                openBookingModal(restaurant);
-                              }}
-                              className="px-2.5 py-1 rounded-lg bg-gold-500 hover:bg-gold-400 text-slate-950 font-bold text-[10px] shadow-sm"
-                            >
-                              Book Table
-                            </button>
-                            <button
-                              onClick={() => toggleFavorite(restaurant._id || restaurant.id)}
-                              className="text-[10px] text-slate-400 hover:text-crimson-400"
-                            >
-                              Remove
-                            </button>
+                            <span className="text-[10px] text-slate-400">• {res.priceCategory}</span>
                           </div>
                         </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(res._id || res.id);
+                          }}
+                          className="p-2 text-crimson-500 hover:bg-crimson-500/10 rounded-lg"
+                        >
+                          <Heart className="w-4 h-4 fill-current" />
+                        </button>
                       </div>
                     ))
                   ) : (
-                    <div className="p-8 text-center rounded-2xl bg-surface-200/50 border border-white/5">
-                      <Heart className="w-10 h-10 text-slate-500 mx-auto mb-2" />
-                      <p className="text-xs font-bold text-slate-300">No favorite venues saved</p>
-                      <p className="text-[11px] text-slate-500 mt-1">
-                        Click the ❤️ icon on any restaurant card to save it for quick booking.
+                    <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+                      <Heart className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                      <p className="text-sm font-bold text-slate-950 dark:text-white">No Saved Favorites</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        Click the heart icon on any restaurant card to save your top dining venues.
                       </p>
                     </div>
                   )}
@@ -304,58 +303,62 @@ export const MyBookingsDrawer = () => {
 
             </div>
 
-            {/* Bottom Close */}
-            <div className="pt-3 border-t border-white/10">
-              <button
-                onClick={() => setIsBookingsDrawerOpen(false)}
-                className="w-full py-2.5 rounded-xl bg-surface-100 hover:bg-surface-50 text-xs font-bold text-slate-200"
-              >
-                Close Center
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Dedicated QR Code Popover Modal */}
-          {activeQrModal && (
-            <div className="fixed inset-0 z-60 overflow-y-auto flex items-center justify-center p-4">
-              <div 
-                onClick={() => setActiveQrModal(null)}
-                className="fixed inset-0 bg-black/85 backdrop-blur-md" 
-              />
-              <div className="relative bg-surface-300 rounded-3xl p-6 border border-gold-500/40 text-center max-w-sm w-full shadow-2xl z-10">
-                <button
-                  onClick={() => setActiveQrModal(null)}
-                  className="absolute top-4 right-4 text-slate-400 hover:text-white"
+            {/* QR Pass Full Modal Preview */}
+            <AnimatePresence>
+              {activeQrModal && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute inset-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md p-6 flex flex-col justify-between z-20"
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
+                    <span className="text-xs font-mono font-bold text-amber-600 dark:text-gold-400">Host Stand QR Pass</span>
+                    <button
+                      onClick={() => setActiveQrModal(null)}
+                      className="p-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
 
-                <h4 className="text-sm font-bold text-white mb-1">Host Stand Digital Pass</h4>
-                <p className="text-[11px] text-slate-400 mb-4">{activeQrModal.restaurantName}</p>
+                  <div className="my-auto flex flex-col items-center text-center p-4 bg-slate-50 dark:bg-black/40 rounded-2xl border border-slate-200 dark:border-white/10">
+                    <h3 className="text-base font-bold text-slate-950 dark:text-white">{activeQrModal.restaurantName}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {activeQrModal.date} • {activeQrModal.timeSlot} • {activeQrModal.partySize} Guests
+                    </p>
 
-                <div className="p-4 bg-white rounded-2xl w-fit mx-auto shadow-2xl my-2 border-2 border-gold-500">
-                  <QRCodeSVG
-                    value={JSON.stringify({
-                      code: activeQrModal.reservationCode,
-                      venue: activeQrModal.restaurantName,
-                      date: activeQrModal.date,
-                      slot: activeQrModal.timeSlot,
-                      guests: activeQrModal.partySize,
-                    })}
-                    size={180}
-                  />
-                  <p className="text-[10px] font-mono font-bold text-slate-900 mt-2">
-                    {activeQrModal.reservationCode}
-                  </p>
-                </div>
+                    <div className="my-4 p-3 bg-white rounded-2xl shadow-xl border border-slate-200">
+                      <QRCodeSVG
+                        value={JSON.stringify({
+                          code: activeQrModal.reservationCode,
+                          restaurant: activeQrModal.restaurantName,
+                          guests: activeQrModal.partySize,
+                          date: activeQrModal.date,
+                          time: activeQrModal.timeSlot,
+                        })}
+                        size={170}
+                        level="H"
+                      />
+                    </div>
 
-                <div className="mt-4 text-xs text-slate-300">
-                  <span>{activeQrModal.date} at {activeQrModal.timeSlot} • {activeQrModal.partySize} Guests</span>
-                </div>
-              </div>
-            </div>
-          )}
+                    <span className="font-mono text-sm font-black text-amber-700 dark:text-gold-400 tracking-wider">
+                      {activeQrModal.reservationCode}
+                    </span>
+                    <p className="text-[11px] text-slate-500 mt-1">Show this pass to the restaurant host on arrival</p>
+                  </div>
 
+                  <button
+                    onClick={() => setActiveQrModal(null)}
+                    className="w-full py-2.5 rounded-xl bg-slate-950 text-white dark:bg-gold-500 dark:text-slate-950 font-bold text-xs"
+                  >
+                    Close Pass
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+          </motion.div>
         </div>
       )}
     </AnimatePresence>

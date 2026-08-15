@@ -47,7 +47,7 @@ export const AuthModal = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closeAuthModal}
-          className="fixed inset-0 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 bg-black/70 backdrop-blur-md"
         />
 
         {/* Modal Card */}
@@ -55,39 +55,38 @@ export const AuthModal = () => {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-surface-300 rounded-3xl border border-gold-500/30 p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
+          className="relative w-full max-w-md bg-white dark:bg-[#0B0F19] rounded-3xl border border-slate-200 dark:border-gold-500/30 p-6 sm:p-8 shadow-2xl z-10 overflow-hidden text-slate-900 dark:text-white transition-colors duration-200"
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-4">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-400">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-gold-400">
                 TableTurn Bangladesh
               </span>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-slate-950 dark:text-white">
                 {authMode === 'login' ? 'Welcome Back' : 'Create an Account'}
               </h3>
             </div>
             <button
               onClick={closeAuthModal}
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-crimson-500/20 border border-crimson-500/40 text-crimson-300 text-xs mb-3">
+            <div className="p-3 rounded-xl bg-crimson-500/15 border border-crimson-500/30 text-crimson-700 dark:text-crimson-300 text-xs mb-3">
               {errorMsg}
             </div>
           )}
-
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {authMode === 'register' && (
               <>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Full Name</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -96,22 +95,22 @@ export const AuthModal = () => {
                       placeholder="e.g. Tanvir Hossain"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-200 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">BD Mobile (+880)</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">BD Mobile Number</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="tel"
                       required
-                      placeholder="+88017XXXXXXXX"
+                      placeholder="+8801XXXXXXXXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-200 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 font-mono"
                     />
                   </div>
                 </div>
@@ -119,22 +118,22 @@ export const AuthModal = () => {
             )}
 
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Email Address</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
                   required
-                  placeholder="name@tableturn.bd"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-200 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Password</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -143,7 +142,7 @@ export const AuthModal = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-200 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
                 />
               </div>
             </div>
@@ -151,36 +150,48 @@ export const AuthModal = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-gold-600 via-gold-500 to-amber-400 hover:from-gold-500 hover:to-amber-300 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all mt-2 disabled:opacity-50"
+              className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-amber-600 via-gold-500 to-amber-400 hover:from-gold-500 hover:to-amber-300 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all flex items-center justify-center gap-2"
             >
-              {loading ? 'Authenticating...' : authMode === 'login' ? 'Sign In' : 'Create Account'}
+              {loading ? (
+                <span>Authenticating...</span>
+              ) : (
+                <span>{authMode === 'login' ? 'Sign In to TableTurn' : 'Complete Registration'}</span>
+              )}
             </button>
           </form>
 
-          {/* Toggle Login / Register */}
-          <div className="mt-4 pt-3 border-t border-white/10 text-center">
+          {/* Switch mode */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/10 text-center">
             {authMode === 'login' ? (
-              <p className="text-xs text-slate-400">
-                Don’t have an account?{' '}
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Don't have an account?{' '}
                 <button
                   onClick={() => openAuthModal('register')}
-                  className="font-bold text-gold-400 hover:underline ml-1"
+                  className="font-bold text-amber-700 dark:text-gold-400 hover:underline"
                 >
-                  Sign Up
+                  Create one now
                 </button>
               </p>
             ) : (
-              <p className="text-xs text-slate-400">
-                Already have an account?{' '}
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Already registered?{' '}
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="font-bold text-gold-400 hover:underline ml-1"
+                  className="font-bold text-amber-700 dark:text-gold-400 hover:underline"
                 >
-                  Sign In
+                  Sign in here
                 </button>
               </p>
             )}
           </div>
+
+          {/* Quick Demo Credentials */}
+          <div className="mt-3 p-2.5 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5 text-[11px] text-slate-500 space-y-0.5">
+            <p className="font-bold text-slate-700 dark:text-slate-400">⚡ Demo Quick Sign-in:</p>
+            <p>Admin: <span className="font-mono text-amber-700 dark:text-gold-400 font-semibold">admin@tableturn.bd</span> / <span className="font-mono font-semibold">admin123456</span></p>
+            <p>Diner: <span className="font-mono text-amber-700 dark:text-gold-400 font-semibold">diner@tableturn.bd</span> / <span className="font-mono font-semibold">diner123456</span></p>
+          </div>
+
         </motion.div>
       </div>
     </AnimatePresence>

@@ -145,34 +145,55 @@ const createReservation = async (req, res) => {
   }
 };
 
-// @desc    Get user's reservations
+// @desc    Get user's reservations (Requires Authentication)
 // @route   GET /api/reservations/my
 const getMyReservations = async (req, res) => {
   try {
-    const { phone, email } = req.query;
-    const userId = req.user ? req.user.id : null;
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    const userId = user.id;
+    const userEmail = typeof user.email === 'string' ? user.email.toLowerCase() : null;
+    const userPhone = typeof user.phone === 'string' ? user.phone : null;
+    const isElevated = user.role === 'admin' || user.role === 'manager';
 
     if (getDBStatus()) {
-      let query = {};
-      if (userId) query.user = userId;
-      else if (phone) query.guestPhone = phone;
-      else if (email) query.guestEmail = email.toLowerCase();
-      else {
-        // Return latest public sample/user reservations
-        const reservations = await Reservation.find().sort({ createdAt: -1 }).limit(20);
-        return res.json({ success: true, count: reservations.length, data: reservations });
+      let query;
+      if (isElevated) {
+        // Elevated staff can optionally filter or view all
+        query = {};
+        if (typeof req.query.email === 'string' && req.query.email.trim()) {
+          query.guestEmail = req.query.email.trim().toLowerCase();
+        }
+        if (typeof req.query.phone === 'string' && req.query.phone.trim()) {
+          query.guestPhone = req.query.phone.trim();
+        }
+      } else {
+        // Standard user can ONLY see reservations matching their user ID, email, or phone
+        const conditions = [];
+        if (userId) conditions.push({ user: userId });
+        if (userEmail) conditions.push({ guestEmail: userEmail });
+        if (userPhone) conditions.push({ guestPhone: userPhone });
+
+        if (conditions.length === 0) {
+          return res.json({ success: true, count: 0, data: [] });
+        }
+        query = { $or: conditions };
       }
 
       const reservations = await Reservation.find(query).sort({ createdAt: -1 });
       return res.json({ success: true, count: reservations.length, data: reservations });
     } else {
       let results = [...memoryReservations];
-      if (userId) {
-        results = results.filter((r) => r.user === userId);
-      } else if (phone) {
-        results = results.filter((r) => r.guestPhone === phone);
-      } else if (email) {
-        results = results.filter((r) => r.guestEmail === email.toLowerCase());
+      if (!isElevated) {
+        results = results.filter(
+          (r) =>
+            (userId && r.user === userId) ||
+            (userEmail && r.guestEmail && r.guestEmail.toLowerCase() === userEmail) ||
+            (userPhone && r.guestPhone === userPhone)
+        );
       }
       return res.json({ success: true, count: results.length, data: results });
     }
@@ -187,9 +208,15 @@ const lookupReservation = async (req, res) => {
   try {
     const { code } = req.params;
 
+    if (typeof code !== 'string' || !code.trim()) {
+      return res.status(400).json({ success: false, message: 'Invalid reservation code parameter' });
+    }
+
+    const cleanCode = code.trim().toUpperCase();
+
     if (getDBStatus()) {
       const reservation = await Reservation.findOne({
-        reservationCode: code.toUpperCase(),
+        reservationCode: cleanCode,
       });
       if (!reservation) {
         return res.status(404).json({ success: false, message: 'Reservation not found' });
@@ -197,7 +224,7 @@ const lookupReservation = async (req, res) => {
       return res.json({ success: true, data: reservation });
     } else {
       const reservation = memoryReservations.find(
-        (r) => r.reservationCode.toUpperCase() === code.toUpperCase()
+        (r) => r.reservationCode && r.reservationCode.toUpperCase() === cleanCode
       );
       if (!reservation) {
         return res.status(404).json({ success: false, message: 'Reservation not found' });
@@ -209,25 +236,67 @@ const lookupReservation = async (req, res) => {
   }
 };
 
-// @desc    Cancel a reservation
+// @desc    Cancel a reservation (Requires Auth & Ownership Check)
 // @route   PATCH /api/reservations/:id/cancel
 const cancelReservation = async (req, res) => {
   try {
     const { id } = req.params;
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    if (typeof id !== 'string' || !id.trim()) {
+      return res.status(400).json({ success: false, message: 'Invalid reservation identifier' });
+    }
+
+    const targetId = id.trim();
 
     if (getDBStatus()) {
-      const reservation = await Reservation.findById(id);
+      const reservation = await Reservation.findById(targetId);
       if (!reservation) {
         return res.status(404).json({ success: false, message: 'Reservation not found' });
       }
+
+      // Ownership & authorization verification (BOLA/IDOR prevention)
+      const isOwner =
+        (reservation.user && reservation.user.toString() === user.id) ||
+        (user.email && reservation.guestEmail && reservation.guestEmail.toLowerCase() === user.email.toLowerCase()) ||
+        (user.phone && reservation.guestPhone === user.phone);
+
+      const isStaff = user.role === 'admin' || user.role === 'manager';
+
+      if (!isOwner && !isStaff) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied. You do not have permission to cancel this reservation.',
+        });
+      }
+
       reservation.status = 'cancelled';
       await reservation.save();
       return res.json({ success: true, message: 'Reservation cancelled successfully', data: reservation });
     } else {
-      const reservation = memoryReservations.find((r) => r._id === id || r.reservationCode === id);
+      const reservation = memoryReservations.find((r) => r._id === targetId || r.reservationCode === targetId);
       if (!reservation) {
         return res.status(404).json({ success: false, message: 'Reservation not found' });
       }
+
+      const isOwner =
+        (reservation.user && reservation.user === user.id) ||
+        (user.email && reservation.guestEmail && reservation.guestEmail.toLowerCase() === user.email.toLowerCase()) ||
+        (user.phone && reservation.guestPhone === user.phone);
+
+      const isStaff = user.role === 'admin' || user.role === 'manager';
+
+      if (!isOwner && !isStaff) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied. You do not have permission to cancel this reservation.',
+        });
+      }
+
       reservation.status = 'cancelled';
       return res.json({ success: true, message: 'Reservation cancelled successfully', data: reservation });
     }

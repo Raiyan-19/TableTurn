@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, User, Phone, Shield } from 'lucide-react';
+import { X, Mail, Lock, User, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
 
@@ -15,6 +15,13 @@ export const AuthModal = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setErrorMsg('');
+      setPassword('');
+    }
+  }, [isAuthModalOpen, authMode]);
+
   if (!isAuthModalOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -25,13 +32,13 @@ export const AuthModal = () => {
     try {
       if (authMode === 'login') {
         await login(email, password);
-        showToast('Logged in successfully!');
+        showToast('Signed in successfully!');
       } else {
         await register({ name, email, phone, password });
-        showToast('Account created & logged in!');
+        showToast('Account created & signed in!');
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Authentication error');
+      setErrorMsg(err.message || 'Authentication error. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -63,8 +70,8 @@ export const AuthModal = () => {
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-gold-400">
                 TableTurn Bangladesh
               </span>
-              <h3 className="text-xl font-bold text-slate-950 dark:text-white">
-                {authMode === 'login' ? 'Welcome Back' : 'Create an Account'}
+              <h3 className="text-xl font-bold text-slate-950 dark:text-white font-display">
+                {authMode === 'login' ? 'Sign In to Your Account' : 'Create an Account'}
               </h3>
             </div>
             <button
@@ -76,7 +83,7 @@ export const AuthModal = () => {
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-crimson-500/15 border border-crimson-500/30 text-crimson-700 dark:text-crimson-300 text-xs mb-3">
+            <div className="p-3 rounded-xl bg-rose-500/10 dark:bg-crimson-500/15 border border-rose-500/30 dark:border-crimson-500/30 text-rose-700 dark:text-crimson-300 text-xs mb-3 font-medium">
               {errorMsg}
             </div>
           )}
@@ -86,7 +93,7 @@ export const AuthModal = () => {
             {authMode === 'register' && (
               <>
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Full Name</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Full Name *</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -95,22 +102,22 @@ export const AuthModal = () => {
                       placeholder="e.g. Tanvir Hossain"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 transition-all shadow-inner"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">BD Mobile Number</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">BD Mobile Number *</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="tel"
                       required
-                      placeholder="+8801XXXXXXXXX"
+                      placeholder="01712345678"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 font-mono"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 font-mono transition-all shadow-inner"
                     />
                   </div>
                 </div>
@@ -118,7 +125,7 @@ export const AuthModal = () => {
             )}
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Email Address</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Email Address *</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -127,13 +134,13 @@ export const AuthModal = () => {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 transition-all shadow-inner"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Password</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Password *</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -142,7 +149,7 @@ export const AuthModal = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 transition-all shadow-inner"
                 />
               </div>
             </div>
@@ -166,6 +173,7 @@ export const AuthModal = () => {
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Don't have an account?{' '}
                 <button
+                  type="button"
                   onClick={() => openAuthModal('register')}
                   className="font-bold text-amber-700 dark:text-gold-400 hover:underline"
                 >
@@ -176,6 +184,7 @@ export const AuthModal = () => {
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Already registered?{' '}
                 <button
+                  type="button"
                   onClick={() => openAuthModal('login')}
                   className="font-bold text-amber-700 dark:text-gold-400 hover:underline"
                 >
@@ -185,15 +194,9 @@ export const AuthModal = () => {
             )}
           </div>
 
-          {/* Quick Demo Credentials */}
-          <div className="mt-3 p-2.5 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5 text-[11px] text-slate-500 space-y-0.5">
-            <p className="font-bold text-slate-700 dark:text-slate-400">⚡ Demo Quick Sign-in:</p>
-            <p>Admin: <span className="font-mono text-amber-700 dark:text-gold-400 font-semibold">admin@tableturn.bd</span> / <span className="font-mono font-semibold">admin123456</span></p>
-            <p>Diner: <span className="font-mono text-amber-700 dark:text-gold-400 font-semibold">diner@tableturn.bd</span> / <span className="font-mono font-semibold">diner123456</span></p>
-          </div>
-
         </motion.div>
       </div>
     </AnimatePresence>
   );
 };
+

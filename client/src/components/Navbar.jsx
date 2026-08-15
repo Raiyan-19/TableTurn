@@ -288,7 +288,7 @@ export const Navbar = () => {
             </div>
           ) : (
             <button
-              onClick={openAuthModal}
+              onClick={() => openAuthModal('login')}
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-600 via-gold-500 to-amber-400 hover:from-gold-500 hover:to-amber-300 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               Sign In

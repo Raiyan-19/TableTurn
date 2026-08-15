@@ -263,10 +263,10 @@ export const RestaurantDetailModal = () => {
             {activeTab === 'menu' && (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-gold-400">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-amber-700 dark:text-gold-400">
                     Chef’s Curated Highlights
                   </h3>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Prices include all Bangladesh VAT & Service
                   </span>
                 </div>
@@ -279,24 +279,24 @@ export const RestaurantDetailModal = () => {
                   ]).map((dish, i) => (
                     <div
                       key={i}
-                      className="p-3.5 rounded-2xl bg-surface-200 border border-white/5 flex items-start gap-3 justify-between group hover:border-gold-500/30 transition-all"
+                      className="p-3.5 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/5 flex items-start gap-3 justify-between group hover:border-amber-400 dark:hover:border-gold-500/30 transition-all shadow-xs"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="text-xs font-bold text-white group-hover:text-gold-300 transition-colors">
+                          <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-gold-300 transition-colors">
                             {dish.name}
                           </h4>
                           {dish.isChefSpecial && (
-                            <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-gold-500/20 text-gold-400 border border-gold-500/30">
+                            <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:bg-gold-500/20 dark:text-gold-400 border border-amber-500/30 dark:border-gold-500/30">
                               Chef's Pick
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                           {dish.description}
                         </p>
                       </div>
-                      <span className="font-mono text-xs font-bold text-gold-400 shrink-0">
+                      <span className="font-mono text-xs font-bold text-amber-700 dark:text-gold-400 shrink-0">
                         ৳{dish.priceBDT}
                       </span>
                     </div>
@@ -304,10 +304,10 @@ export const RestaurantDetailModal = () => {
                 </div>
 
                 {/* Available Slots Pill Selector */}
-                <div className="mt-6 p-4 rounded-2xl bg-surface-100 border border-gold-500/20">
+                <div className="mt-6 p-4 rounded-2xl bg-slate-50 dark:bg-surface-100 border border-amber-300/70 dark:border-gold-500/20 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-gold-400" />
+                    <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-amber-600 dark:text-gold-400" />
                       Instant Slots for {selectedDate} ({partySize} Guests)
                     </span>
                   </div>
@@ -319,7 +319,7 @@ export const RestaurantDetailModal = () => {
                           closeDetailModal();
                           openBookingModal(detailRestaurant, slot);
                         }}
-                        className="py-2 px-1 rounded-xl bg-surface-200 hover:bg-gold-500 hover:text-slate-950 border border-white/10 text-xs font-bold text-slate-200 text-center transition-all shadow-sm"
+                        className="py-2 px-1 rounded-xl bg-white dark:bg-surface-200 hover:bg-gold-500 hover:text-slate-950 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 text-center transition-all shadow-xs"
                       >
                         {slot.time}
                       </button>
@@ -333,26 +333,26 @@ export const RestaurantDetailModal = () => {
             {activeTab === 'reviews' && (
               <div className="space-y-6">
                 {/* Write Review Box */}
-                <div className="p-4 rounded-2xl bg-surface-200 border border-gold-500/30 space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gold-400 flex items-center gap-1.5">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-amber-300/70 dark:border-gold-500/30 space-y-3 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-gold-400 flex items-center gap-1.5">
                     <MessageSquarePlus className="w-4 h-4" /> Share Your Dining Experience & Rating
                   </h4>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-300 font-bold">Your Rating:</span>
+                    <span className="text-xs text-slate-700 dark:text-slate-300 font-bold">Your Rating:</span>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
                           type="button"
                           onClick={() => setUserRating(star)}
-                          className="p-1 text-gold-400 hover:scale-125 transition-transform"
+                          className="p-1 text-amber-500 dark:text-gold-400 hover:scale-125 transition-transform"
                         >
-                          <Star className={`w-5 h-5 ${star <= userRating ? 'fill-gold-400 text-gold-400' : 'text-slate-600'}`} />
+                          <Star className={`w-5 h-5 ${star <= userRating ? 'fill-amber-400 text-amber-500 dark:fill-gold-400 dark:text-gold-400' : 'text-slate-300 dark:text-slate-600'}`} />
                         </button>
                       ))}
                     </div>
-                    <span className="text-xs font-extrabold text-gold-400 font-mono">({userRating} / 5 Stars)</span>
+                    <span className="text-xs font-extrabold text-amber-700 dark:text-gold-400 font-mono">({userRating} / 5 Stars)</span>
                   </div>
 
                   <textarea
@@ -360,7 +360,7 @@ export const RestaurantDetailModal = () => {
                     placeholder="Write your honest dining review (food quality, service, ambiance)..."
                     value={userComment}
                     onChange={(e) => setUserComment(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-surface-100 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                    className="w-full p-3 rounded-xl bg-white dark:bg-surface-100 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500/60 shadow-inner"
                   />
 
                   <div className="flex justify-end">
@@ -376,20 +376,20 @@ export const RestaurantDetailModal = () => {
 
                 {/* List of Verified Reviews */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     Verified Customer Reviews ({reviewsList.length})
                   </h4>
 
                   {reviewsList.map((rev, idx) => (
-                    <div key={idx} className="p-4 rounded-2xl bg-surface-200 border border-white/5 space-y-2">
+                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/5 space-y-2 shadow-xs">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center font-bold text-xs">
+                          <div className="w-7 h-7 rounded-full bg-amber-500/15 text-amber-700 dark:bg-gold-500/20 dark:text-gold-400 flex items-center justify-center font-bold text-xs">
                             {rev.userName?.charAt(0) || 'U'}
                           </div>
                           <div>
-                            <span className="text-xs font-bold text-white block">{rev.userName}</span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white block">{rev.userName}</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400">
                               {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Recent Diner'}
                             </span>
                           </div>
@@ -399,13 +399,13 @@ export const RestaurantDetailModal = () => {
                           {[1, 2, 3, 4, 5].map((s) => (
                             <Star
                               key={s}
-                              className={`w-3.5 h-3.5 ${s <= rev.rating ? 'fill-gold-400 text-gold-400' : 'text-slate-600'}`}
+                              className={`w-3.5 h-3.5 ${s <= rev.rating ? 'fill-amber-400 text-amber-500 dark:fill-gold-400 dark:text-gold-400' : 'text-slate-300 dark:text-slate-600'}`}
                             />
                           ))}
                         </div>
                       </div>
 
-                      <p className="text-xs text-slate-300 leading-relaxed italic">
+                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
                         "{rev.comment}"
                       </p>
                     </div>
@@ -418,50 +418,50 @@ export const RestaurantDetailModal = () => {
             {activeTab === 'about' && (
               <div className="space-y-4">
                 {/* Chef Note */}
-                <div className="p-4 rounded-2xl bg-gold-500/10 border border-gold-500/20">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-400 flex items-center gap-1.5">
+                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-gold-500/10 border border-amber-500/20 dark:border-gold-500/20">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-gold-400 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Culinary Note
                   </span>
-                  <p className="text-xs text-slate-200 mt-1.5 leading-relaxed italic">
+                  <p className="text-xs text-slate-800 dark:text-slate-200 mt-1.5 leading-relaxed italic">
                     "{detailRestaurant.chefNote || 'Our culinary philosophy blends authentic Bangladeshi spices with world-class dining hospitality.'}"
                   </p>
                 </div>
 
                 {/* Meta Details Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3.5 rounded-2xl bg-surface-200 border border-white/5">
-                    <MapPin className="w-4 h-4 text-gold-400 mb-1" />
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Address</span>
-                    <span className="text-xs font-medium text-white">{detailRestaurant.address}</span>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/5">
+                    <MapPin className="w-4 h-4 text-amber-600 dark:text-gold-400 mb-1" />
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Address</span>
+                    <span className="text-xs font-medium text-slate-900 dark:text-white">{detailRestaurant.address}</span>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-surface-200 border border-white/5">
-                    <Clock className="w-4 h-4 text-emerald-400 mb-1" />
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Hours</span>
-                    <span className="text-xs font-medium text-white">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/5">
+                    <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mb-1" />
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Hours</span>
+                    <span className="text-xs font-medium text-slate-900 dark:text-white">
                       {detailRestaurant.operationalHours?.opening || '12:00 PM'} - {detailRestaurant.operationalHours?.closing || '11:00 PM'}
                     </span>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-surface-200 border border-white/5">
-                    <Car className="w-4 h-4 text-sky-400 mb-1" />
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Parking</span>
-                    <span className="text-xs font-medium text-white">{detailRestaurant.parkingInfo || 'Valet on site'}</span>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/5">
+                    <Car className="w-4 h-4 text-sky-600 dark:text-sky-400 mb-1" />
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Parking</span>
+                    <span className="text-xs font-medium text-slate-900 dark:text-white">{detailRestaurant.parkingInfo || 'Valet on site'}</span>
                   </div>
                 </div>
 
                 {/* Features List */}
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
                     Venue Amenities
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {(detailRestaurant.features || []).map((feat) => (
                       <span
                         key={feat}
-                        className="px-3 py-1 rounded-xl bg-surface-200 border border-white/10 text-xs font-semibold text-slate-200 flex items-center gap-1.5"
+                        className="px-3 py-1 rounded-xl bg-slate-50 dark:bg-surface-200 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5"
                       >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         {feat}
                       </span>
                     ))}
@@ -474,7 +474,7 @@ export const RestaurantDetailModal = () => {
             {activeTab === 'gallery' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {photos.map((photo, index) => (
-                  <div key={index} className="h-52 rounded-2xl overflow-hidden border border-white/10">
+                  <div key={index} className="h-52 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10">
                     <img
                       src={photo}
                       alt={`${detailRestaurant.name} ${index + 1}`}

@@ -42,6 +42,28 @@ const protect = async (req, res, next) => {
   }
 };
 
+const optionalAuth = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, getJwtSecret());
+      req.user = decoded;
+    } catch (err) {
+      // If token is expired or invalid, continue as unauthenticated guest
+    }
+  }
+
+  next();
+};
+
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
@@ -54,5 +76,5 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize, getJwtSecret, JWT_SECRET };
+module.exports = { protect, optionalAuth, authorize, getJwtSecret, JWT_SECRET };
 

@@ -54,7 +54,7 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 - **Interactive Seating Selection:** Choose seating preferences (*Main Dining Room, Open-Air Rooftop, Chef’s Table, VIP Booth, Garden Terrace*).
 - **Special Occasion Customization:** Tailor bookings for *Birthdays, Date Nights, Anniversaries, Business Dinners, or Family Gatherings*.
 - **Bangladeshi Mobile Verification:** Built-in phone validation supporting `+8801XXXXXXXXX` and `01XXXXXXXXX` formats.
-- **Smart Party Sizing:** Dynamic guest stepper with support for 1 to 25+ diners with instant slot availability calculations.
+- **Smart Party Sizing:** Dynamic guest stepper with support for 1 to 30 diners with instant slot availability calculations.
 
 ### 🎟️ 4. Digital QR Pass & Instant Confirmation
 - **Cryptographic High-Entropy Reservation ID:** Automatically generated booking codes (`TT-DHA-XXXXXXXX`, `TT-CTG-XXXXXXXX`).
@@ -62,17 +62,50 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 - **Calendar & Social Integration:** 1-Click **Add to Calendar (.ics download)** and **WhatsApp Booking Share**.
 - **Confetti Celebration:** Delightful micro-animations upon successful table booking.
 
-### 👥 5. Role-Based Access & Admin Terminal
+### 👥 5. Role-Based Access & Admin Management Terminal
 - **Admin Dashboard:** Full MongoDB CRUD interface for adding venues, toggling flash discounts, and managing listings.
-- **Verified Reviews & Star Ratings:** Authentic diner community feedback and ratings engine.
-- **Host / Manager Portal:** Dedicated QR scanner and guest roster for venue hosts.
+- **Live KPIs & Analytics:** Division breakdown statistics, lifetime reservations count, upcoming diners, and active venue counts.
+- **Host Stand Scanner:** Real-time verification of guest QR code references and 1-click table seating (`seated`).
+- **Verified Reviews & Star Ratings:** Authentic diner community feedback, ratings recalculation, and reviews engine.
 
-### 🔒 6. Security & VAPT Hardening (13/13 OWASP Top 10 Passed)
+### 🔒 6. Security & VAPT Hardening (OWASP Top 10 Compliance)
 - **Rate Limiting & Anti-Bruteforce:** Custom sliding window rate limiters (`authLimiter`, `apiLimiter`) preventing brute-force attacks on auth and API endpoints.
-- **Security Headers & CORS Controls:** Production HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection`), strict origin validation, and 10kb request payload limits.
+- **Security Headers & CORS Controls:** Production HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`), strict origin validation, and 10kb request payload limits.
 - **IDOR & BOLA Prevention:** Ownership check verification on reservation management and mandatory `protect` auth guards for user booking data.
-- **ReDoS Protection:** Input sanitization (`escapeRegex`) across all search and filter queries to prevent regex denial of service.
 - **Role Escalation Safeguards:** Locked public user registration roles (`role` forced to `user`).
+
+---
+
+## 🔑 Default Test Accounts
+
+| Role | Email | Password | Access & Capabilities |
+|---|---|---|---|
+| **Super Administrator** | `admin@tableturn.bd` | `admin1122` | Full Management Terminal, Analytics, Venue CRUD, Flash Deals, Scanner |
+| **Venue Manager** | `manager@thegrove.bd` | `Shakila1122` | Host Stand Scanner, Seating Management, Live Reservations |
+| **Diner (User)** | *Register new or any account* | *User password* | Instant Table Bookings, Profile & Favorite Venues, Reviews |
+
+---
+
+## 📡 API Reference Overview
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/health` | Public | Service health & division manifest |
+| `GET` | `/api/restaurants` | Public | Get all restaurants with division/cuisine/price filters |
+| `GET` | `/api/restaurants/:id` | Public | Get single restaurant details |
+| `GET` | `/api/restaurants/meta/division-stats` | Public | Get counts per Bangladesh division |
+| `POST` | `/api/auth/register` | Public | Register a new user |
+| `POST` | `/api/auth/login` | Public | Authenticate user & get JWT token |
+| `GET` | `/api/auth/me` | User | Get current logged-in user profile |
+| `POST` | `/api/reservations` | Public/User | Create real-time table booking & QR pass |
+| `GET` | `/api/reservations/lookup/:code` | Public/Host | Verify reservation by booking code |
+| `GET` | `/api/reservations/my` | User | Get authenticated user's reservations |
+| `PATCH` | `/api/reservations/:id/cancel` | User/Staff | Cancel reservation (BOLA protected) |
+| `GET` | `/api/admin/stats` | Admin/Manager | Platform KPI statistics & division breakdowns |
+| `GET` | `/api/admin/reservations` | Admin/Manager | Filtered list of all nationwide reservations |
+| `PATCH` | `/api/admin/reservations/:id/status` | Admin/Manager | Update reservation status (`confirmed`, `seated`, `cancelled`) |
+| `POST` | `/api/admin/restaurants` | Admin/Manager | List a new partner restaurant |
+| `PATCH` | `/api/admin/restaurants/:id/offer` | Admin/Manager | Toggle 30% flash deal on venue |
 
 ---
 
@@ -97,7 +130,7 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 | **MongoDB & Mongoose** | Document database for persistent storage |
 | **JWT (JSON Web Tokens)** | Secure stateless authentication |
 | **Bcrypt.js** | Industry-standard password hashing |
-| **Helmet & Rate Limit** | Hardened HTTP security headers and anti-DDoS throttles |
+| **Rate Limiters & Security Headers** | Hardened HTTP security headers and anti-DDoS throttles |
 | **Morgan & CORS** | Request logging and cross-origin resource sharing |
 
 ---

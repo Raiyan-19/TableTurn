@@ -99,7 +99,8 @@ export const AuthProvider = ({ children }) => {
         isAuthModalOpen,
         authMode,
         openAuthModal: (mode = 'login') => {
-          setAuthMode(mode);
+          const cleanMode = typeof mode === 'string' && (mode === 'register' || mode === 'login') ? mode : 'login';
+          setAuthMode(cleanMode);
           setIsAuthModalOpen(true);
         },
         closeAuthModal: () => setIsAuthModalOpen(false),

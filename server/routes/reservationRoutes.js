@@ -7,9 +7,9 @@ const {
   cancelReservation,
   checkinReservation,
 } = require('../controllers/reservationController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, optionalAuth } = require('../middleware/authMiddleware');
 
-router.post('/', protect, createReservation);
+router.post('/', optionalAuth, createReservation);
 router.get('/my', protect, getMyReservations);
 router.get('/lookup/:code', lookupReservation);
 router.patch('/:id/cancel', protect, cancelReservation);

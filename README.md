@@ -53,6 +53,13 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 - **MongoDB Atlas Integration:** Full Mongoose ORM with schema validation for users, restaurants, and reservations.
 - **Automatic In-Memory / JSON Fallback:** If the database connection is offline or in cold start, the app automatically fails over to an intelligent in-memory store, ensuring 100% uninterrupted user experience.
 
+### 🔒 6. Security & VAPT Hardening
+- **Rate Limiting & Anti-Bruteforce:** Custom sliding window rate limiters (`authLimiter`, `apiLimiter`) preventing brute-force attacks on auth and API endpoints.
+- **Security Headers & CORS Controls:** Production HTTP security headers (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`), strict origin validation, and 10kb request payload limits.
+- **IDOR & BOLA Prevention:** Ownership check verification on reservation management and mandatory `protect` auth guards for user booking data.
+- **ReDoS Protection:** Input sanitization (`escapeRegex`) across all search and filter queries to prevent regex denial of service.
+- **Role Escalation Safeguards:** Locked public user registration roles and environment-restricted demo auth endpoints.
+
 ---
 
 ## 🛠️ Tech Stack

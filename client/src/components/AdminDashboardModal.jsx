@@ -234,22 +234,22 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
-          className="relative w-full max-w-6xl max-h-[92vh] bg-surface-300 rounded-3xl border border-gold-500/40 p-4 sm:p-6 shadow-2xl z-10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-6xl max-h-[92vh] bg-white dark:bg-[#0B0F19] rounded-3xl border border-slate-200 dark:border-gold-500/40 p-4 sm:p-6 shadow-2xl z-10 flex flex-col overflow-hidden text-slate-900 dark:text-white transition-colors duration-200"
         >
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10 shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gold-500/20 border border-gold-500/50 flex items-center justify-center text-gold-400 shadow-glow-gold">
+              <div className="w-11 h-11 rounded-2xl bg-gold-500/20 border border-gold-500/50 flex items-center justify-center text-amber-600 dark:text-gold-400 shadow-glow-gold">
                 <ShieldCheck className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-500/15 text-gold-400 border border-gold-500/30">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-500/15 text-amber-700 dark:text-gold-400 border border-gold-500/30">
                     {user?.role === 'admin' ? 'Super Administrator' : 'Venue Manager'}
                   </span>
-                  <span className="text-xs text-slate-400">Authenticated: {user?.email}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Authenticated: {user?.email}</span>
                 </div>
-                <h2 className="text-xl font-bold text-white font-display">
+                <h2 className="text-xl font-bold text-slate-950 dark:text-white font-display">
                   TableTurn Bangladesh — Management Terminal
                 </h2>
               </div>
@@ -259,14 +259,14 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
               <button
                 onClick={loadDashboardData}
                 disabled={loading}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors"
                 title="Refresh Live Data"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-gold-400' : ''}`} />
               </button>
               <button
                 onClick={onClose}
-                className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -274,7 +274,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 pt-4 pb-3 border-b border-white/5 shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-2 pt-4 pb-3 border-b border-slate-200 dark:border-white/5 shrink-0 overflow-x-auto">
             {[
               { id: 'reservations', label: 'All Reservations', icon: Users },
               { id: 'restaurants', label: 'Venues & Flash Offers', icon: Building2 },
@@ -289,8 +289,8 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
                     isActive
-                      ? 'bg-gold-500 text-slate-950 shadow-glow-gold'
-                      : 'bg-surface-200/80 text-slate-300 hover:bg-surface-100 hover:text-white border border-white/5'
+                      ? 'bg-slate-950 text-white dark:bg-gold-500 dark:text-slate-950 shadow-sm'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -307,7 +307,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
             {activeTab === 'reservations' && (
               <div className="space-y-4">
                 {/* Search & Filter Bar */}
-                <div className="p-3 rounded-2xl bg-surface-200 border border-white/10 flex flex-wrap items-center justify-between gap-3">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
                   <div className="relative flex-1 min-w-[200px]">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -316,7 +316,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && loadDashboardData()}
-                      className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-100 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-gold-500/60"
+                      className="w-full pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500/60"
                     />
                   </div>
 
@@ -325,7 +325,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      className="px-3 py-2 rounded-xl bg-surface-100 border border-white/10 text-xs font-bold text-white focus:outline-none cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                     >
                       <option value="all">All Statuses</option>
                       <option value="confirmed">Confirmed</option>
@@ -337,7 +337,7 @@ export const AdminDashboardModal = ({ isOpen, onClose }) => {
                     <select
                       value={filterDivision}
                       onChange={(e) => setFilterDivision(e.target.value)}
-                      className="px-3 py-2 rounded-xl bg-surface-100 border border-white/10 text-xs font-bold text-white focus:outline-none cursor-pointer"
+                      className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                     >
                       <option value="All">All 8 Divisions</option>
                       {BANGLADESH_DIVISIONS.map((d) => (

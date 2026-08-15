@@ -125,12 +125,12 @@ export const RestaurantDetailModal = () => {
           className="fixed inset-0 bg-black/80 backdrop-blur-md"
         />
 
-        {/* Modal Window */}
+        {/* Modal Container Box */}
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
-          className="relative w-full max-w-4xl bg-surface-300 rounded-3xl border border-white/15 shadow-2xl z-10 overflow-hidden max-h-[90vh] flex flex-col"
+          className="relative w-full max-w-4xl bg-white dark:bg-[#0B0F19] rounded-3xl border border-slate-200 dark:border-white/15 shadow-2xl z-10 overflow-hidden max-h-[90vh] flex flex-col text-slate-900 dark:text-white transition-colors duration-200"
         >
           {/* Top Hero Banner with Image */}
           <div className="relative h-64 sm:h-80 w-full shrink-0">
@@ -139,12 +139,12 @@ export const RestaurantDetailModal = () => {
               alt={detailRestaurant.name}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface-300 via-surface-300/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0B0F19] via-slate-950/40 to-transparent" />
 
             {/* Close Button */}
             <button
               onClick={closeDetailModal}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full glass-panel flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-slate-950 text-white border border-white/20 flex items-center justify-center transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -152,8 +152,8 @@ export const RestaurantDetailModal = () => {
             {/* Favorite Toggle */}
             <button
               onClick={() => toggleFavorite(restaurantId)}
-              className={`absolute top-4 right-16 w-9 h-9 rounded-full glass-panel flex items-center justify-center transition-colors ${
-                isFav ? 'bg-crimson-500 text-white' : 'text-white hover:bg-white/20'
+              className={`absolute top-4 right-16 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-slate-950 border border-white/20 flex items-center justify-center transition-colors ${
+                isFav ? 'bg-crimson-500 text-white' : 'text-white'
               }`}
             >
               <Heart className={`w-4 h-4 ${isFav ? 'fill-white' : ''}`} />
@@ -174,20 +174,20 @@ export const RestaurantDetailModal = () => {
                   <span className="px-2.5 py-0.5 rounded-full bg-gold-500 text-slate-950 font-extrabold text-[10px] uppercase tracking-wider">
                     {detailRestaurant.division} Division
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200 font-semibold text-[10px]">
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-950/80 text-white font-semibold text-[10px] border border-white/20">
                     {detailRestaurant.subDistrict}
                   </span>
-                  <span className="text-xs font-bold text-gold-400">
+                  <span className="text-xs font-bold text-amber-600 dark:text-gold-400">
                     ⭐ {currentRating} ({currentReviewsCount} Reviews)
                   </span>
-                  <span className="text-xs font-bold text-slate-300">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-300">
                     • ~৳{detailRestaurant.averageCostForTwo || 1500} for 2
                   </span>
                 </div>
-                <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+                <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">
                   {detailRestaurant.name}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl">
                   {detailRestaurant.tagline}
                 </p>
               </div>
@@ -207,7 +207,7 @@ export const RestaurantDetailModal = () => {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="px-6 border-b border-white/10 flex items-center gap-4 sm:gap-6 bg-surface-200 overflow-x-auto shrink-0">
+          <div className="px-6 border-b border-slate-200 dark:border-white/10 flex items-center gap-4 sm:gap-6 bg-slate-50 dark:bg-white/5 overflow-x-auto shrink-0">
             <button
               onClick={() => setActiveTab('menu')}
               className={`py-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 shrink-0 ${

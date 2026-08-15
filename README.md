@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://raiyan-19.github.io/TableTurn/" target="_blank">
-    <img src="https://img.shields.io/badge/LIVE%20DEMO-Visit%20TableTurn%20App-FFB800?style=for-the-badge&logo=google-chrome&logoColor=black" alt="Live Demo" />
+    <img src="https://img.shields.io/badge/LIVE%20DEMO-Visit%20GitHub%20Pages-FFB800?style=for-the-badge&logo=google-chrome&logoColor=black" alt="Live Demo" />
   </a>
   <a href="#-features"><img src="https://img.shields.io/badge/Coverage-8%20Divisions-FF5A5F?style=for-the-badge&logo=compass" alt="Divisions" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/Stack-MERN%20%2B%20Vite%20%2B%20Tailwind-00D26A?style=for-the-badge&logo=react" alt="Tech Stack" /></a>
@@ -19,15 +19,14 @@
 
 ---
 
-## 🌐 Live Demonstration Links
+## 🌐 Live Interactive Demo
 
 Experience the live interactive frontend directly in your browser:
 
-* 🚀 **GitHub Pages Live Demo**: [https://raiyan-19.github.io/TableTurn/](https://raiyan-19.github.io/TableTurn/)
-* ⚡ **Vercel Instant Deployment**: [https://tableturn.vercel.app](https://tableturn.vercel.app) *(or connect your Vercel account in 1-click)*
+* 🚀 **GitHub Pages Official Live Demo**: [https://raiyan-19.github.io/TableTurn/](https://raiyan-19.github.io/TableTurn/)
 
 > [!NOTE]
-> The frontend features an intelligent client-side fallback engine, allowing full exploration of all 8 administrative divisions, real-time filters, 3D animations, slot reservations, and dynamic QR passes even in standalone static preview mode!
+> The frontend features an intelligent client-side fallback engine, allowing full exploration of all 8 administrative divisions, real-time filters, 3D animations, slot reservations, and dynamic QR passes in standalone preview mode!
 
 ---
 
@@ -186,24 +185,6 @@ npm run dev
 ```
 
 Visit **`http://localhost:5173`** in your browser.
-
----
-
-## 🌐 24/7 Free Cloud Deployment
-
-### 1. Deploy Frontend on [Vercel](https://vercel.com) (Free & Instant)
-1. Go to [vercel.com](https://vercel.com) and import your `TableTurn` GitHub repository.
-2. Select **Root Directory:** `client` and Framework **Vite**.
-3. Click **Deploy** — your live link will be ready in under 1 minute!
-
-### 2. Deploy Frontend on GitHub Pages
-To publish directly to GitHub Pages:
-1. Run in your terminal:
-   ```bash
-   cd client
-   npm run build
-   ```
-2. In GitHub repository **Settings** -> **Pages**, choose deploy from `gh-pages` branch or GitHub Actions.
 
 ---
 

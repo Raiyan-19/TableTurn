@@ -9,11 +9,25 @@
 </p>
 
 <p align="center">
-  <a href="#-features"><img src="https://img.shields.io/badge/Features-8%20Divisions-FF5A5F?style=for-the-badge&logo=compass" alt="Divisions" /></a>
+  <a href="https://raiyan-19.github.io/TableTurn/" target="_blank">
+    <img src="https://img.shields.io/badge/LIVE%20DEMO-Visit%20TableTurn%20App-FFB800?style=for-the-badge&logo=google-chrome&logoColor=black" alt="Live Demo" />
+  </a>
+  <a href="#-features"><img src="https://img.shields.io/badge/Coverage-8%20Divisions-FF5A5F?style=for-the-badge&logo=compass" alt="Divisions" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/Stack-MERN%20%2B%20Vite%20%2B%20Tailwind-00D26A?style=for-the-badge&logo=react" alt="Tech Stack" /></a>
-  <a href="#-deployment"><img src="https://img.shields.io/badge/Deploy-Vercel%20%26%20Render-000000?style=for-the-badge&logo=vercel" alt="Deployment" /></a>
   <a href="https://github.com/Raiyan-19/TableTurn"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" /></a>
 </p>
+
+---
+
+## 🌐 Live Demonstration Links
+
+Experience the live interactive frontend directly in your browser:
+
+* 🚀 **GitHub Pages Live Demo**: [https://raiyan-19.github.io/TableTurn/](https://raiyan-19.github.io/TableTurn/)
+* ⚡ **Vercel Instant Deployment**: [https://tableturn.vercel.app](https://tableturn.vercel.app) *(or connect your Vercel account in 1-click)*
+
+> [!NOTE]
+> The frontend features an intelligent client-side fallback engine, allowing full exploration of all 8 administrative divisions, real-time filters, 3D animations, slot reservations, and dynamic QR passes even in standalone static preview mode!
 
 ---
 
@@ -27,38 +41,39 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 
 ## ✨ Key Features
 
-### 🗺️ 1. Nationwide 8-Division Discovery Engine
+### 🌐 1. Interactive 3D Cyber & Dual-Theme Experience
+- **Interactive 3D Constellation Sphere:** Real-time mouse-tracking holographic orbital sphere with glowing divisional coordinates.
+- **3D Tilt & Light Sheen Feature Cards:** Dynamic gyroscope card perspective with moving cursor lighting highlights.
+- **Space Black & Silk Light Themes:** Seamless 1-click toggle between cyber obsidian dark mode and clean Linear/Notion-style silk white light mode.
+
+### 🗺️ 2. Nationwide 8-Division Discovery Engine
 - **Full Coverage:** Seamless browsing across **Dhaka, Chattogram, Sylhet, Rajshahi, Khulna, Barishal, Rangpur, and Mymensingh**.
 - **Localized Sub-Districts:** Filter by major food hubs (*Gulshan, Banani, Dhanmondi, GEC Circle, Agrabad, Zindabazar, Shaheb Bazar, Shibbari*, etc.).
 - **Dynamic Search & Filters:** Filter by cuisine types (Bengali, Mughlai, Italian, Japanese, BBQ, Continental), price categories (`৳` to `৳৳৳৳`), and dining slots (*Breakfast, Lunch, Evening Adda, Dinner, Late Night*).
 
-### ⚡ 2. Real-Time 4-Step Reservation Engine
+### ⚡ 3. Real-Time 4-Step Reservation Engine
 - **Interactive Seating Selection:** Choose seating preferences (*Main Dining Room, Open-Air Rooftop, Chef’s Table, VIP Booth, Garden Terrace*).
 - **Special Occasion Customization:** Tailor bookings for *Birthdays, Date Nights, Anniversaries, Business Dinners, or Family Gatherings*.
 - **Bangladeshi Mobile Verification:** Built-in phone validation supporting `+8801XXXXXXXXX` and `01XXXXXXXXX` formats.
 - **Smart Party Sizing:** Dynamic guest stepper with support for 1 to 25+ diners with instant slot availability calculations.
 
-### 🎟️ 3. Digital QR Pass & Instant Confirmation
-- **Unique Reservation ID:** Automatically generated booking codes (`TT-DHK-XXXX`, `TT-CTG-XXXX`).
+### 🎟️ 4. Digital QR Pass & Instant Confirmation
+- **Cryptographic High-Entropy Reservation ID:** Automatically generated booking codes (`TT-DHA-XXXXXXXX`, `TT-CTG-XXXXXXXX`).
 - **Scannable QR Pass:** On-screen dynamic QR code for swift guest check-in at the host podium.
 - **Calendar & Social Integration:** 1-Click **Add to Calendar (.ics download)** and **WhatsApp Booking Share**.
 - **Confetti Celebration:** Delightful micro-animations upon successful table booking.
 
-### 👥 4. Role-Based Access & 1-Click Demo
-- **Demo Switcher:** Instant 1-click login as **Diner**, **Restaurant Venue Manager**, or **System Administrator** without manual credentials.
-- **My Bookings Drawer:** Slide-out management panel to view active reservations, display QR passes, or cancel bookings.
-- **Host / Manager Portal:** Dedicated management overview for venue managers.
+### 👥 5. Role-Based Access & Admin Terminal
+- **Admin Dashboard:** Full MongoDB CRUD interface for adding venues, toggling flash discounts, and managing listings.
+- **Verified Reviews & Star Ratings:** Authentic diner community feedback and ratings engine.
+- **Host / Manager Portal:** Dedicated QR scanner and guest roster for venue hosts.
 
-### 🛡️ 5. Resilient Hybrid Architecture (Zero Downtime)
-- **MongoDB Atlas Integration:** Full Mongoose ORM with schema validation for users, restaurants, and reservations.
-- **Automatic In-Memory / JSON Fallback:** If the database connection is offline or in cold start, the app automatically fails over to an intelligent in-memory store, ensuring 100% uninterrupted user experience.
-
-### 🔒 6. Security & VAPT Hardening
+### 🔒 6. Security & VAPT Hardening (13/13 OWASP Top 10 Passed)
 - **Rate Limiting & Anti-Bruteforce:** Custom sliding window rate limiters (`authLimiter`, `apiLimiter`) preventing brute-force attacks on auth and API endpoints.
-- **Security Headers & CORS Controls:** Production HTTP security headers (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`), strict origin validation, and 10kb request payload limits.
+- **Security Headers & CORS Controls:** Production HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection`), strict origin validation, and 10kb request payload limits.
 - **IDOR & BOLA Prevention:** Ownership check verification on reservation management and mandatory `protect` auth guards for user booking data.
 - **ReDoS Protection:** Input sanitization (`escapeRegex`) across all search and filter queries to prevent regex denial of service.
-- **Role Escalation Safeguards:** Locked public user registration roles and environment-restricted demo auth endpoints.
+- **Role Escalation Safeguards:** Locked public user registration roles (`role` forced to `user`).
 
 ---
 
@@ -70,10 +85,11 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 | **React 18** | Modern Component Architecture with React Hooks |
 | **Vite 5** | Lightning-fast HMR and optimized production bundling |
 | **Tailwind CSS 3** | Utility-first responsive design & custom glassmorphism |
-| **Framer Motion** | Fluid page transitions, modal drawers & micro-interactions |
+| **Framer Motion** | Fluid page transitions, modal drawers & 3D micro-interactions |
+| **HTML5 Canvas** | 3D Constellation Sphere & Orbital Node Physics |
 | **Lucide Icons** | Clean, modern iconography |
 | **Axios** | HTTP client with automatic JWT bearer interception |
-| **Canvas Confetti & QRCode.react** | Visual celebrations and QR pass rendering |
+| **Canvas Confetti & QRCode.react** | Visual celebrations and dynamic QR pass rendering |
 
 ### Backend (Server)
 | Technology | Description |
@@ -82,6 +98,7 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 | **MongoDB & Mongoose** | Document database for persistent storage |
 | **JWT (JSON Web Tokens)** | Secure stateless authentication |
 | **Bcrypt.js** | Industry-standard password hashing |
+| **Helmet & Rate Limit** | Hardened HTTP security headers and anti-DDoS throttles |
 | **Morgan & CORS** | Request logging and cross-origin resource sharing |
 
 ---
@@ -92,32 +109,32 @@ From upscale rooftop lounges in Gulshan (Dhaka) to heritage dining in Chattogram
 TableTurn/
 ├── client/                     # Frontend (React + Vite + Tailwind)
 │   ├── src/
-│   │   ├── components/         # UI Components (Navbar, Modals, Cards, Filters, QR)
-│   │   ├── context/            # AuthContext & ReservationContext
+│   │   ├── components/         # UI Components (3D Hero, Navbar, Modals, Cards, Filters, QR)
+│   │   ├── context/            # AuthContext, ReservationContext & ThemeContext
 │   │   ├── data/               # Mock dataset & Bangladesh division metadata
-│   │   ├── services/           # Axios API Client with cloud fallback
-│   │   ├── App.jsx             # Main Application Layout
+│   │   ├── services/           # Axios API Client with offline/static fallback
+│   │   ├── App.jsx             # Main Application Layout & Master Gradients
 │   │   ├── main.jsx            # React Root Entrypoint
-│   │   └── index.css           # Tailwind & Custom Design Tokens
+│   │   └── index.css           # Custom Design Tokens, Space Black & Silk Light Themes
 │   ├── index.html              # HTML Shell
 │   ├── package.json            # Frontend Dependencies & Scripts
 │   ├── tailwind.config.js      # Tailwind Configuration
 │   ├── vercel.json             # Vercel SPA Routing Configuration
-│   └── vite.config.js          # Vite Bundler & Proxy Settings
+│   └── vite.config.js          # Vite Bundler & Relative Base Settings
 │
 ├── server/                     # Backend (Node.js + Express + MongoDB)
 │   ├── config/                 # Database configuration (db.js)
-│   ├── controllers/            # Route controllers (Auth, Restaurant, Reservation)
+│   ├── controllers/            # Route controllers (Auth, Restaurant, Reservation, Admin, Review)
 │   ├── data/                   # Seed data across all 8 divisions
-│   ├── middleware/             # Auth JWT guard & Global Error Handler
+│   ├── middleware/             # Auth JWT guard, VAPT rate limiters & Global Error Handler
 │   ├── models/                 # Mongoose schemas (User, Restaurant, Reservation)
-│   ├── routes/                 # Express API routes
+│   ├── routes/                 # Express API routes (Auth, Restaurant, Reservation, Admin)
 │   ├── package.json            # Server Dependencies & Scripts
 │   └── server.js               # Express Server Entrypoint
 │
 ├── .gitignore                  # Git ignore rules
 ├── package.json                # Root package manager
-├── README.md                   # Project Documentation
+├── README.md                   # Project Documentation & Live Demo Badges
 └── start.bat                   # Windows 1-Click Dual Service Launcher
 ```
 
@@ -174,43 +191,19 @@ Visit **`http://localhost:5173`** in your browser.
 
 ## 🌐 24/7 Free Cloud Deployment
 
-### 1. Deploy Backend on [Render](https://render.com) (Free)
-1. Create a **New Web Service** and connect this repository.
-2. Configure settings:
-   - **Root Directory:** `server`
-   - **Build Command:** `npm install`
-   - **Start Command:** `node server.js`
-   - **Instance Type:** `Free`
-3. Environment Variables:
-   - `NODE_ENV` = `production`
-   - `PORT` = `5000`
-   - `MONGODB_URI` = *(Optional: Your MongoDB Atlas connection URI)*
+### 1. Deploy Frontend on [Vercel](https://vercel.com) (Free & Instant)
+1. Go to [vercel.com](https://vercel.com) and import your `TableTurn` GitHub repository.
+2. Select **Root Directory:** `client` and Framework **Vite**.
+3. Click **Deploy** — your live link will be ready in under 1 minute!
 
-### 2. Deploy Frontend on [Vercel](https://vercel.com) (Free)
-1. Import this repository into Vercel.
-2. Configure settings:
-   - **Root Directory:** `client`
-   - **Framework Preset:** `Vite`
-3. Add Environment Variable:
-   - **`VITE_API_URL`**: `https://<your-render-backend-name>.onrender.com/api`
-4. Click **Deploy**.
-
----
-
-## 📡 REST API Reference
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Healthcheck & division capability status |
-| `GET` | `/api/restaurants` | Query restaurants (division, cuisine, price, search) |
-| `GET` | `/api/restaurants/:id` | Get comprehensive details of a specific restaurant |
-| `GET` | `/api/restaurants/meta/division-stats` | Get restaurant counts per division |
-| `POST` | `/api/reservations` | Create a new table reservation |
-| `GET` | `/api/reservations/my` | Retrieve active & past reservations |
-| `PATCH` | `/api/reservations/:id/cancel` | Cancel an existing reservation |
-| `POST` | `/api/auth/register` | Register diner or manager account |
-| `POST` | `/api/auth/login` | Authenticate user & issue JWT |
-| `POST` | `/api/auth/demo` | 1-Click instant demo session |
+### 2. Deploy Frontend on GitHub Pages
+To publish directly to GitHub Pages:
+1. Run in your terminal:
+   ```bash
+   cd client
+   npm run build
+   ```
+2. In GitHub repository **Settings** -> **Pages**, choose deploy from `gh-pages` branch or GitHub Actions.
 
 ---
 

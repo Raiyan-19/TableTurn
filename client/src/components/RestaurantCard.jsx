@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, 
   MapPin, 
@@ -11,7 +11,8 @@ import {
   CheckCircle2, 
   Utensils,
   Eye,
-  Flame
+  Flame,
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
@@ -24,16 +25,43 @@ export const RestaurantCard = ({ restaurant }) => {
   const restaurantId = restaurant._id || restaurant.id;
   const isFav = favorites.includes(restaurantId);
 
+  // 3D Card Perspective Tilt
+  const cardRef = useRef(null);
+  const [rotX, setRotX] = useState(0);
+  const [rotY, setRotY] = useState(0);
+  const [sheenPos, setSheenPos] = useState({ x: 50, y: 50 });
+
+  const handleCardMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rX = ((y - centerY) / centerY) * -6;
+    const rY = ((x - centerX) / centerX) * 6;
+
+    setRotX(rX);
+    setRotY(rY);
+    setSheenPos({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
+  };
+
+  const handleCardMouseLeave = () => {
+    setRotX(0);
+    setRotY(0);
+  };
+
   const photos = restaurant.photos && restaurant.photos.length > 0
     ? restaurant.photos
     : ['https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'];
 
   const slots = restaurant.defaultSlots || [
-    { time: '12:30 PM', type: 'Main Dining', available: true },
-    { time: '01:15 PM', type: 'Main Dining', available: true },
+    { time: '12:00 PM', type: 'Main Dining', available: true },
+    { time: '01:30 PM', type: 'Main Dining', available: true },
     { time: '07:00 PM', type: 'Main Dining', available: true },
-    { time: '07:45 PM', type: 'Terrace', available: true },
-    { time: '08:30 PM', type: 'Chef’s Table', available: true },
+    { time: '08:15 PM', type: 'Terrace', available: true },
+    { time: '09:30 PM', type: 'Chef’s Table', available: true },
   ];
 
   const handleNextPhoto = (e) => {
@@ -48,35 +76,49 @@ export const RestaurantCard = ({ restaurant }) => {
 
   return (
     <motion.div
+      ref={cardRef}
+      onMouseMove={handleCardMouseMove}
+      onMouseLeave={handleCardMouseLeave}
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-      className="rounded-3xl bg-white dark:bg-[#0B0F19] border border-slate-200/90 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-lg dark:hover:border-gold-500/50 transition-all flex flex-col group"
+      style={{
+        transform: `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
+        transition: 'transform 0.15s ease-out',
+      }}
+      className="relative rounded-3xl bg-white dark:bg-[#0B0F19] border border-slate-200/90 dark:border-white/10 overflow-hidden shadow-card-elevated dark:shadow-2xl hover:border-gold-500/50 transition-all flex flex-col group"
     >
-      {/* Photo Carousel Container */}
+      {/* 3D Holographic Cursor Sheen */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+        style={{
+          background: `radial-gradient(circle at ${sheenPos.x}% ${sheenPos.y}%, rgba(245, 158, 11, 0.08) 0%, transparent 60%)`,
+        }}
+      />
+
+      {/* Photo Carousel Container (NO bottom border line to prevent any light gap) */}
       <div 
         onClick={() => openDetailModal(restaurant)}
-        className="relative h-56 w-full overflow-hidden bg-black border-b border-slate-200/80 dark:border-white/10 cursor-pointer"
+        className="relative h-56 w-full overflow-hidden bg-slate-950 cursor-pointer"
       >
         <img
+          key={currentPhotoIndex}
           src={photos[currentPhotoIndex]}
           alt={restaurant.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ease-out"
         />
 
-        {/* Clean Top-and-Bottom Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/30 pointer-events-none" />
+        {/* Clean Vignette & Seamless Bottom Dark Fade */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/40 pointer-events-none" />
 
         {/* Division & Sub-district Badge or Flash Offer Banner */}
         {restaurant.offer?.hasOffer ? (
-          <div className="absolute top-3 left-3 flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-amber-600 via-crimson-600 to-rose-600 text-white text-[10px] font-extrabold tracking-wider shadow-lg animate-pulse">
+          <div className="absolute top-3 left-3 flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-amber-600 via-crimson-600 to-rose-600 text-white text-[10px] font-extrabold tracking-wider shadow-lg animate-pulse z-10">
             <Flame className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
             <span>{restaurant.offer.discountPercent}% OFF • {restaurant.offer.tag || 'Flash Deal'}</span>
           </div>
         ) : (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950 text-[10px] font-mono font-bold text-white shadow-md border border-white/20">
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/90 text-[10px] font-mono font-bold text-white shadow-md border border-white/20 z-10 backdrop-blur-md">
             <MapPin className="w-3 h-3 text-gold-400" />
             <span>{restaurant.subDistrict}, {restaurant.division}</span>
           </div>
@@ -88,7 +130,7 @@ export const RestaurantCard = ({ restaurant }) => {
             e.stopPropagation();
             toggleFavorite(restaurantId);
           }}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all ${
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-950/80 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all z-10 ${
             isFav ? 'bg-crimson-500 text-white shadow-glow-gold' : 'text-white hover:bg-white/30'
           }`}
           title="Save to favorites"
@@ -135,7 +177,7 @@ export const RestaurantCard = ({ restaurant }) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="p-5 flex-1 flex flex-col justify-between relative z-10">
         <div>
           {/* Rating, Price Tier, and Cuisine Tags */}
           <div className="flex items-center justify-between gap-2 mb-2.5">

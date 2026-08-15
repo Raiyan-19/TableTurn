@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light dark;
-  --bg-main: #F8F9FD;
+  --bg-main: #FAFAFC;
   --bg-surface-50: #FFFFFF;
   --bg-surface-100: #FFFFFF;
   --bg-surface-200: #F1F4F9;
@@ -50,20 +50,20 @@ body {
 
 /* Master Ambient Theme Gradients */
 .master-gradient-bg {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FD 20%, #F1F5FA 50%, #F8FAFC 80%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 25%, #F4F6FB 60%, #FAFAFC 100%);
 }
 
 .dark .master-gradient-bg {
   background: linear-gradient(180deg, #06080E 0%, #080B13 30%, #0A0E1A 60%, #06080E 100%);
 }
 
-/* Cyber Matrix Background with Fine Ambient Lighting */
+/* Cyber Matrix Background with Crisp Dotted Matrix in Both Modes */
 .cyber-grid-bg {
   background-color: transparent;
   background-image: 
-    radial-gradient(rgba(0, 0, 0, 0.05) 1.2px, transparent 1.2px),
-    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    radial-gradient(rgba(15, 23, 42, 0.16) 1.5px, transparent 1.5px),
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 32px 32px, 64px 64px, 64px 64px;
 }
 

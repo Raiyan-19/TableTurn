@@ -25,7 +25,7 @@ import { useReservation } from '../context/ReservationContext';
 import { useTheme } from '../context/ThemeContext';
 import { BANGLADESH_DIVISIONS } from '../data/mockData';
 
-// Theme-Adaptive High-Contrast 3D Constellation Sphere & Orbital Network
+// Seamless 3D Spherical Constellation Network (Without harsh outer circle)
 const Interactive3DConstellation = ({ isDark }) => {
   const canvasRef = useRef(null);
 
@@ -35,12 +35,12 @@ const Interactive3DConstellation = ({ isDark }) => {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
-    let width = (canvas.width = 520);
-    let height = (canvas.height = 520);
+    let width = (canvas.width = 480);
+    let height = (canvas.height = 480);
 
-    const numPoints = 42;
+    const numPoints = 46;
     const points = [];
-    const radius = 150;
+    const radius = 145;
 
     for (let i = 0; i < numPoints; i++) {
       const theta = Math.acos(2 * Math.random() - 1);
@@ -50,17 +50,6 @@ const Interactive3DConstellation = ({ isDark }) => {
         y: radius * Math.sin(theta) * Math.sin(phi),
         z: radius * Math.cos(theta),
         pulse: Math.random() * Math.PI,
-      });
-    }
-
-    const ringPoints = [];
-    const ringRadius = 195;
-    for (let i = 0; i < 28; i++) {
-      const angle = (i / 28) * Math.PI * 2;
-      ringPoints.push({
-        x: ringRadius * Math.cos(angle),
-        y: 0,
-        z: ringRadius * Math.sin(angle),
       });
     }
 
@@ -88,7 +77,7 @@ const Interactive3DConstellation = ({ isDark }) => {
       angleX += (mouseY + 0.0025 - angleX) * 0.04;
       angleY += (mouseX + 0.0035 - angleY) * 0.04;
 
-      // 1. Rotate Sphere Nodes
+      // 1. Rotate Sphere Nodes in 3D Space
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
         p.pulse += 0.025;
@@ -108,43 +97,7 @@ const Interactive3DConstellation = ({ isDark }) => {
         p.z = z2;
       }
 
-      // 2. Rotate Orbital Ring
-      for (let i = 0; i < ringPoints.length; i++) {
-        const p = ringPoints[i];
-        const cosY = Math.cos(angleY * 0.75);
-        const sinY = Math.sin(angleY * 0.75);
-        const x1 = p.x * cosY - p.z * sinY;
-        const z1 = p.z * cosY + p.x * sinY;
-
-        const cosX = Math.cos(angleX * 1.15 + 0.35);
-        const sinX = Math.sin(angleX * 1.15 + 0.35);
-        const y2 = p.y * cosX - z1 * sinX;
-        const z2 = z1 * cosX + p.y * sinX;
-
-        p.x = x1;
-        p.y = y2;
-        p.z = z2;
-      }
-
-      // 3. Draw Outer Orbital Ring Line
-      ctx.beginPath();
-      for (let i = 0; i < ringPoints.length; i++) {
-        const p = ringPoints[i];
-        const next = ringPoints[(i + 1) % ringPoints.length];
-        const alpha = Math.max(0.12, (p.z + ringRadius) / (2 * ringRadius));
-        
-        ctx.strokeStyle = isDark
-          ? `rgba(245, 158, 11, ${alpha * 0.35})`
-          : `rgba(217, 119, 6, ${alpha * 0.55})`;
-        ctx.lineWidth = isDark ? 1.0 : 1.4;
-        
-        ctx.beginPath();
-        ctx.moveTo(centerX + p.x, centerY + p.y);
-        ctx.lineTo(centerX + next.x, centerY + next.y);
-        ctx.stroke();
-      }
-
-      // 4. Draw Interconnected Constellation Mesh
+      // 2. Draw Interconnected Constellation Mesh
       for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
           const dx = points[i].x - points[j].x;
@@ -152,15 +105,15 @@ const Interactive3DConstellation = ({ isDark }) => {
           const dz = points[i].z - points[j].z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-          if (dist < 80) {
+          if (dist < 82) {
             const avgZ = (points[i].z + points[j].z) / 2;
             const depthFactor = (avgZ + radius) / (2 * radius);
-            const alpha = (1 - dist / 80) * (0.15 + depthFactor * 0.45);
+            const alpha = (1 - dist / 82) * (0.15 + depthFactor * 0.45);
 
             ctx.strokeStyle = isDark
-              ? `rgba(245, 158, 11, ${alpha * 0.8})`
+              ? `rgba(245, 158, 11, ${alpha * 0.75})`
               : `rgba(180, 83, 9, ${alpha * 0.75})`;
-            ctx.lineWidth = isDark ? 0.8 : 1.2;
+            ctx.lineWidth = isDark ? 0.8 : 1.1;
             
             ctx.beginPath();
             ctx.moveTo(centerX + points[i].x, centerY + points[i].y);
@@ -170,11 +123,11 @@ const Interactive3DConstellation = ({ isDark }) => {
         }
       }
 
-      // 5. Draw Glowing 3D Celestial Nodes
+      // 3. Draw Glowing 3D Celestial Nodes
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
         const scale = (p.z + radius) / (2 * radius);
-        const nodeSize = 1.2 + scale * 3.2;
+        const nodeSize = 1.2 + scale * 3.0;
         const alpha = 0.3 + scale * 0.7;
 
         // Foreground Node Halo Glow
@@ -187,7 +140,7 @@ const Interactive3DConstellation = ({ isDark }) => {
             grad.addColorStop(0, `rgba(245, 158, 11, ${alpha * 0.5})`);
             grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
           } else {
-            grad.addColorStop(0, `rgba(217, 119, 6, ${alpha * 0.45})`);
+            grad.addColorStop(0, `rgba(217, 119, 6, ${alpha * 0.4})`);
             grad.addColorStop(1, 'rgba(217, 119, 6, 0)');
           }
           ctx.fillStyle = grad;
@@ -225,8 +178,8 @@ const Interactive3DConstellation = ({ isDark }) => {
       className={`w-full h-full pointer-events-none transition-opacity duration-300 ${
         isDark ? 'opacity-65' : 'opacity-85'
       }`}
-      width={520}
-      height={520}
+      width={480}
+      height={480}
     />
   );
 };
@@ -342,7 +295,7 @@ export const HeroSection = () => {
         {/* Main Hero Header Area */}
         <div className="relative min-h-[400px] flex flex-col items-center justify-center text-center">
           
-          {/* Theme-Adaptive High-Contrast 3D Constellation Sphere */}
+          {/* Seamless Theme-Adaptive 3D Constellation Sphere */}
           <div className="absolute -left-16 lg:-left-6 top-1/2 -translate-y-1/2 w-72 h-72 sm:w-96 sm:h-96 pointer-events-none z-0 hidden md:block">
             <Interactive3DConstellation isDark={isDark} />
           </div>

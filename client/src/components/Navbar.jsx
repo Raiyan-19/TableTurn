@@ -71,7 +71,7 @@ export const Navbar = () => {
   const confirmedBookingsCount = myBookings.filter(b => b.status === 'confirmed').length;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-white/10 glass-panel transition-colors duration-200">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#06080E]/90 backdrop-blur-md transition-colors duration-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
         {/* Brand Logo */}
@@ -99,7 +99,7 @@ export const Navbar = () => {
           <div ref={divisionDropdownRef} className="relative hidden md:block">
             <button
               onClick={() => setIsDivisionDropdownOpen(!isDivisionDropdownOpen)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-surface-100/80 hover:bg-slate-50 dark:hover:bg-surface-50 border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
             >
               <MapPin className="w-4 h-4 text-gold-500" />
               <span>{selectedDivision === 'All' ? 'All 8 Divisions' : `${selectedDivision} Division`}</span>
@@ -114,7 +114,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 mt-2 w-56 rounded-2xl glass-panel-gold p-2 shadow-2xl z-50 border border-gold-500/40"
+                  className="absolute left-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#0E1320] p-2 shadow-2xl z-50 border border-slate-200 dark:border-gold-500/40"
                 >
                   <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gold-600 dark:text-gold-400 border-b border-slate-200 dark:border-white/10">
                     Select Division
@@ -139,11 +139,11 @@ export const Navbar = () => {
                         setSelectedDivision(div);
                         setIsDivisionDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs font-medium rounded-xl transition-colors flex items-center justify-between ${
+                      className={`w-full text-left px-3 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center justify-between ${
                         selectedDivision === div ? 'bg-gold-500 text-slate-950 font-bold' : 'text-slate-800 dark:text-slate-300 hover:bg-gold-500/10'
                       }`}
                     >
-                      <span>{div}</span>
+                      <span>{div} Division</span>
                       {selectedDivision === div && <span className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                     </button>
                   ))}
@@ -153,21 +153,21 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Search Bar Input (Desktop Center) */}
-        <div className="hidden lg:flex items-center flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        {/* Global Live Search Bar */}
+        <div className="flex-1 max-w-md hidden lg:block">
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search Gulshan fine dining, Mezban, Kacchi, Rooftops..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-full bg-white dark:bg-surface-200/90 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-gold-500/60 focus:ring-1 focus:ring-gold-500/50 shadow-sm transition-all"
+              placeholder="Search Gulshan fine dining, Mezban, Kacchi, Rooftops..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 shadow-sm transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-white"
               >
                 ✕
               </button>
@@ -175,38 +175,38 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Right Actions & Navigation */}
+        <div className="flex items-center gap-2.5">
           
-          {/* Dark / Light Mode Luxury Switcher */}
+          {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-white dark:bg-surface-100 hover:bg-slate-50 dark:hover:bg-surface-50 border border-slate-200 dark:border-white/10 text-gold-600 dark:text-gold-400 transition-all hover:scale-105 shadow-sm"
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-800 dark:text-slate-200 shadow-sm transition-all"
             title={isDark ? 'Switch to Silk Light Mode' : 'Switch to Space Black Mode'}
           >
             {isDark ? (
-              <Sun className="w-4 h-4 text-amber-400 animate-pulse" />
+              <Sun className="w-4 h-4 text-gold-400" />
             ) : (
-              <Moon className="w-4 h-4 text-indigo-600" />
+              <Moon className="w-4 h-4 text-slate-700" />
             )}
           </button>
 
-          {/* Advanced Filter Button */}
+          {/* Filter Drawer Toggle */}
           <button
             onClick={() => setIsFilterDrawerOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-surface-100 hover:bg-slate-50 dark:hover:bg-surface-50 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white shadow-sm transition-all"
-            title="Filter by Price, Cuisine, Halal, Rooftop..."
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
+            title="Open Advanced Filters"
           >
             <SlidersHorizontal className="w-4 h-4 text-gold-500" />
             <span className="hidden sm:inline">Filters</span>
           </button>
 
-          {/* Admin / Manager Direct Launch Button */}
-          {isAuthenticated && (user?.role === 'admin' || user?.role === 'manager') && (
+          {/* Admin Dashboard Trigger */}
+          {isAuthenticated && user?.role === 'admin' && (
             <button
               onClick={() => setIsAdminModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-gold-500/20 hover:from-gold-500 hover:to-amber-400 hover:text-slate-950 border border-gold-500/50 text-gold-600 dark:text-gold-400 text-xs font-extrabold shadow-glow-gold transition-all"
-              title="Open Admin & Manager Management Terminal"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/30 text-xs font-bold text-gold-600 dark:text-gold-400 shadow-sm transition-colors"
+              title="Open Admin Terminal"
             >
               <ShieldCheck className="w-4 h-4" />
               <span className="hidden sm:inline">Admin Panel</span>
@@ -216,113 +216,87 @@ export const Navbar = () => {
           {/* My Bookings Trigger */}
           <button
             onClick={() => setIsBookingsDrawerOpen(true)}
-            className="relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-surface-100 hover:bg-slate-50 dark:hover:bg-surface-50 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm transition-all hover:border-gold-500/40"
+            className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm transition-colors"
           >
-            <CalendarCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <CalendarCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span className="hidden sm:inline">My Bookings</span>
             {confirmedBookingsCount > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black shadow-glow-emerald">
+              <span className="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-black flex items-center justify-center shadow-glow-gold">
                 {confirmedBookingsCount}
               </span>
             )}
           </button>
 
-          {/* User Auth Section */}
+          {/* User Auth Profile / Login */}
           {isAuthenticated ? (
             <div ref={profileDropdownRef} className="relative">
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center gap-2 p-1 rounded-full bg-white dark:bg-surface-100 hover:bg-slate-50 dark:hover:bg-surface-50 border border-gold-500/40 shadow-sm transition-all"
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 shadow-sm transition-colors"
               >
                 <img
-                  src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'}
-                  alt={user.name}
-                  className="w-8 h-8 rounded-full object-cover"
+                  src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
+                  alt={user?.name || 'User'}
+                  className="w-7 h-7 rounded-lg object-cover"
                 />
-                <span className="hidden md:inline text-xs font-bold text-slate-800 dark:text-slate-200 pr-2 max-w-[100px] truncate">
-                  {user.name.split(' ')[0]}
+                <span className="text-xs font-bold text-slate-900 dark:text-white max-w-[90px] truncate hidden sm:inline">
+                  {user?.name?.split(' ')[0] || 'Diner'}
                 </span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
-              {/* Profile Dropdown */}
               <AnimatePresence>
                 {isProfileDropdownOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 8, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    className="absolute right-0 mt-2 w-64 rounded-2xl glass-panel-gold p-3 shadow-2xl z-50 border border-gold-500/40"
+                    className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-[#0E1320] p-2 shadow-2xl z-50 border border-slate-200 dark:border-gold-500/40"
                   >
-                    <div className="pb-2 border-b border-slate-200 dark:border-white/10">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
-                      <div className="mt-1 flex items-center gap-1.5">
-                        <ShieldCheck className="w-3 h-3 text-gold-500" />
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-600 dark:text-gold-400">
-                          {user.role} Member
-                        </span>
-                      </div>
+                    <div className="px-3 py-2 border-b border-slate-200 dark:border-white/10">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono uppercase font-bold text-gold-600 dark:text-gold-400 bg-gold-500/10 px-1.5 py-0.5 rounded">
+                        {user?.role} Access
+                      </span>
                     </div>
 
-                    <div className="pt-2 flex flex-col gap-1">
-                      {(user.role === 'admin' || user.role === 'manager') && (
-                        <button
-                          onClick={() => {
-                            setIsProfileDropdownOpen(false);
-                            setIsAdminModalOpen(true);
-                          }}
-                          className="w-full text-left px-3 py-2 text-xs font-bold text-gold-700 dark:text-gold-300 hover:bg-gold-500/20 rounded-xl flex items-center gap-2"
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5 text-gold-500" />
-                          Admin & Manager Terminal
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setIsBookingsDrawerOpen(true);
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-gold-500/10 rounded-xl flex items-center gap-2"
-                      >
-                        <CalendarCheck className="w-3.5 h-3.5 text-emerald-500" />
-                        My Reservations & QR Passes
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          setIsHostPortalOpen(true);
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-gold-500/10 rounded-xl flex items-center gap-2"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-gold-500" />
-                        Host Stand & Scanner
-                      </button>
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsProfileDropdownOpen(false);
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs font-bold text-crimson-600 dark:text-crimson-400 hover:bg-crimson-500/10 rounded-xl flex items-center gap-2"
-                      >
-                        <LogOut className="w-3.5 h-3.5" />
-                        Sign Out
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setIsBookingsDrawerOpen(true);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-300 hover:bg-gold-500/10 rounded-xl transition-colors flex items-center gap-2"
+                    >
+                      <CalendarCheck className="w-4 h-4 text-emerald-500" />
+                      <span>My Reservations</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-semibold text-crimson-600 dark:text-crimson-400 hover:bg-crimson-500/10 rounded-xl transition-colors flex items-center gap-2 mt-1"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => openAuthModal('login')}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-amber-400 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                Sign In
-              </button>
-            </div>
+            <button
+              onClick={openAuthModal}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-600 via-gold-500 to-amber-400 hover:from-gold-500 hover:to-amber-300 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Sign In
+            </button>
           )}
+
         </div>
+
       </div>
     </header>
   );

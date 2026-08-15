@@ -24,7 +24,7 @@ import {
 import { useReservation } from '../context/ReservationContext';
 import { BANGLADESH_DIVISIONS } from '../data/mockData';
 
-// Advanced Interactive 3D Holographic Constellation Sphere with Orbital Rings & Mouse Tilt
+// Ambient 3D Constellation Sphere placed cleanly in background
 const Interactive3DConstellation = () => {
   const canvasRef = useRef(null);
 
@@ -34,13 +34,12 @@ const Interactive3DConstellation = () => {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
-    let width = (canvas.width = 560);
-    let height = (canvas.height = 560);
+    let width = (canvas.width = 440);
+    let height = (canvas.height = 440);
 
-    // Dynamic Nodes & Coordinates
-    const numPoints = 48;
+    const numPoints = 36;
     const points = [];
-    const radius = 170;
+    const radius = 135;
 
     for (let i = 0; i < numPoints; i++) {
       const theta = Math.acos(2 * Math.random() - 1);
@@ -53,11 +52,10 @@ const Interactive3DConstellation = () => {
       });
     }
 
-    // Orbital Ring Points
     const ringPoints = [];
-    const ringRadius = 210;
-    for (let i = 0; i < 28; i++) {
-      const angle = (i / 28) * Math.PI * 2;
+    const ringRadius = 175;
+    for (let i = 0; i < 24; i++) {
+      const angle = (i / 24) * Math.PI * 2;
       ringPoints.push({
         x: ringRadius * Math.cos(angle),
         y: 0,
@@ -67,42 +65,38 @@ const Interactive3DConstellation = () => {
 
     let mouseX = 0;
     let mouseY = 0;
-    let targetRotX = 0.003;
-    let targetRotY = 0.004;
 
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       const x = (e.clientX - rect.left - width / 2) / (width / 2);
       const y = (e.clientY - rect.top - height / 2) / (height / 2);
-      mouseX = x * 0.015;
-      mouseY = y * 0.015;
+      mouseX = x * 0.01;
+      mouseY = y * 0.01;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    let angleX = 0.003;
-    let angleY = 0.004;
+    let angleX = 0.002;
+    let angleY = 0.003;
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
       const centerX = width / 2;
       const centerY = height / 2;
 
-      angleX += (mouseY + 0.0025 - angleX) * 0.05;
-      angleY += (mouseX + 0.0035 - angleY) * 0.05;
+      angleX += (mouseY + 0.002 - angleX) * 0.04;
+      angleY += (mouseX + 0.003 - angleY) * 0.04;
 
       // 1. Rotate Sphere Nodes
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
-        p.pulse += 0.03;
+        p.pulse += 0.02;
 
-        // Rotate Y
         const cosY = Math.cos(angleY);
         const sinY = Math.sin(angleY);
         const x1 = p.x * cosY - p.z * sinY;
         const z1 = p.z * cosY + p.x * sinY;
 
-        // Rotate X
         const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
         const y2 = p.y * cosX - z1 * sinX;
@@ -116,13 +110,13 @@ const Interactive3DConstellation = () => {
       // 2. Rotate Orbital Ring
       for (let i = 0; i < ringPoints.length; i++) {
         const p = ringPoints[i];
-        const cosY = Math.cos(angleY * 0.8);
-        const sinY = Math.sin(angleY * 0.8);
+        const cosY = Math.cos(angleY * 0.7);
+        const sinY = Math.sin(angleY * 0.7);
         const x1 = p.x * cosY - p.z * sinY;
         const z1 = p.z * cosY + p.x * sinY;
 
-        const cosX = Math.cos(angleX * 1.2 + 0.4);
-        const sinX = Math.sin(angleX * 1.2 + 0.4);
+        const cosX = Math.cos(angleX * 1.1 + 0.3);
+        const sinX = Math.sin(angleX * 1.1 + 0.3);
         const y2 = p.y * cosX - z1 * sinX;
         const z2 = z1 * cosX + p.y * sinX;
 
@@ -131,21 +125,21 @@ const Interactive3DConstellation = () => {
         p.z = z2;
       }
 
-      // 3. Draw Outer Orbital Ring Line
+      // 3. Draw Outer Ring Line
       ctx.beginPath();
       for (let i = 0; i < ringPoints.length; i++) {
         const p = ringPoints[i];
         const next = ringPoints[(i + 1) % ringPoints.length];
-        const alpha = Math.max(0.1, (p.z + ringRadius) / (2 * ringRadius));
-        ctx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.25})`;
-        ctx.lineWidth = 1;
+        const alpha = Math.max(0.08, (p.z + ringRadius) / (2 * ringRadius));
+        ctx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.2})`;
+        ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.moveTo(centerX + p.x, centerY + p.y);
         ctx.lineTo(centerX + next.x, centerY + next.y);
         ctx.stroke();
       }
 
-      // 4. Draw Interconnected Constellation Mesh
+      // 4. Draw Constellation Mesh
       for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
           const dx = points[i].x - points[j].x;
@@ -153,13 +147,13 @@ const Interactive3DConstellation = () => {
           const dz = points[i].z - points[j].z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-          if (dist < 85) {
+          if (dist < 75) {
             const avgZ = (points[i].z + points[j].z) / 2;
             const depthFactor = (avgZ + radius) / (2 * radius);
-            const alpha = (1 - dist / 85) * (0.15 + depthFactor * 0.35);
+            const alpha = (1 - dist / 75) * (0.1 + depthFactor * 0.25);
 
             ctx.strokeStyle = `rgba(245, 158, 11, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.lineWidth = 0.7;
             ctx.beginPath();
             ctx.moveTo(centerX + points[i].x, centerY + points[i].y);
             ctx.lineTo(centerX + points[j].x, centerY + points[j].y);
@@ -168,46 +162,17 @@ const Interactive3DConstellation = () => {
         }
       }
 
-      // 5. Draw Glowing Holographic Nodes
+      // 5. Draw Clean Nodes
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
         const scale = (p.z + radius) / (2 * radius);
-        const nodeSize = 1.2 + scale * 3.2;
-        const pulseEffect = Math.sin(p.pulse) * 0.5 + 0.5;
-        const alpha = 0.25 + scale * 0.75;
+        const nodeSize = 1.0 + scale * 2.5;
+        const alpha = 0.2 + scale * 0.7;
 
-        // Radial Glow Halo for foreground nodes
-        if (p.z > 20) {
-          const grad = ctx.createRadialGradient(
-            centerX + p.x, centerY + p.y, 0,
-            centerX + p.x, centerY + p.y, nodeSize * 4
-          );
-          grad.addColorStop(0, `rgba(245, 158, 11, ${alpha * 0.6})`);
-          grad.addColorStop(0.5, `rgba(245, 158, 11, ${alpha * 0.2})`);
-          grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(centerX + p.x, centerY + p.y, nodeSize * 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Core Node
-        ctx.fillStyle = p.z > 50 ? '#FFFFFF' : `rgba(245, 158, 11, ${alpha})`;
+        ctx.fillStyle = p.z > 40 ? '#FFFFFF' : `rgba(245, 158, 11, ${alpha})`;
         ctx.beginPath();
         ctx.arc(centerX + p.x, centerY + p.y, nodeSize, 0, Math.PI * 2);
         ctx.fill();
-
-        // Divisional Telemetry Tag on Key Foreground Nodes
-        if (i === 4 && p.z > 40) {
-          ctx.font = '9px monospace';
-          ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
-          ctx.fillText('23.81° N, 90.41° E [DHAKA]', centerX + p.x + 8, centerY + p.y - 4);
-        }
-        if (i === 12 && p.z > 40) {
-          ctx.font = '9px monospace';
-          ctx.fillStyle = `rgba(16, 185, 129, ${alpha})`;
-          ctx.fillText('22.35° N, 91.78° E [CHAT]', centerX + p.x + 8, centerY + p.y - 4);
-        }
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -224,9 +189,9 @@ const Interactive3DConstellation = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-full opacity-80 pointer-events-none"
-      width={560}
-      height={560}
+      className="w-full h-full opacity-40 pointer-events-none"
+      width={440}
+      height={440}
     />
   );
 };
@@ -246,8 +211,8 @@ const Interactive3DCard = ({ icon: Icon, title, description, badge, color = 'gol
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rX = ((y - centerY) / centerY) * -12;
-    const rY = ((x - centerX) / centerX) * 12;
+    const rX = ((y - centerY) / centerY) * -10;
+    const rY = ((x - centerX) / centerX) * 10;
 
     setRotX(rX);
     setRotY(rY);
@@ -270,7 +235,7 @@ const Interactive3DCard = ({ icon: Icon, title, description, badge, color = 'gol
       }}
       className="relative p-6 sm:p-7 rounded-3xl cyber-card overflow-hidden group cursor-pointer flex flex-col justify-between"
     >
-      {/* Dynamic Cursor Sheen Gradient Overlay */}
+      {/* Dynamic Cursor Sheen */}
       <div
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"
         style={{
@@ -302,7 +267,7 @@ const Interactive3DCard = ({ icon: Icon, title, description, badge, color = 'gol
         </p>
       </div>
 
-      {/* Bottom status indicator bar */}
+      {/* Bottom status bar */}
       <div className="mt-5 pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-400 relative z-10">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -333,16 +298,16 @@ export const HeroSection = () => {
     <section className="relative pt-12 pb-20 overflow-hidden cyber-grid-bg transition-colors duration-300">
       
       {/* Background Ambient Radial Glow */}
-      <div className="absolute top-1/4 left-1/3 w-[650px] h-[650px] bg-gold-500/12 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-subtle" />
-      <div className="absolute top-1/2 right-1/4 w-[550px] h-[550px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/3 w-[650px] h-[650px] bg-gold-500/10 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-subtle" />
+      <div className="absolute top-1/2 right-1/4 w-[550px] h-[550px] bg-emerald-500/8 rounded-full blur-[120px] pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Main Hero Header Area with Constellation Node Canvas */}
-        <div className="relative min-h-[420px] flex flex-col items-center justify-center text-center">
+        {/* Main Hero Header Area */}
+        <div className="relative min-h-[400px] flex flex-col items-center justify-center text-center">
           
-          {/* Animated Interactive 3D Constellation Sphere floating on the left / behind */}
-          <div className="absolute -left-12 sm:left-2 top-1/2 -translate-y-1/2 w-80 h-80 sm:w-[480px] sm:h-[480px] pointer-events-none z-0 hidden md:block">
+          {/* Constellation Sphere in the far-left background */}
+          <div className="absolute -left-20 lg:-left-8 top-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 pointer-events-none z-0 hidden md:block">
             <Interactive3DConstellation />
           </div>
 
@@ -356,12 +321,12 @@ export const HeroSection = () => {
             <span>Non-monetary Academic & Hospitality Dining Protocol</span>
           </motion.div>
 
-          {/* Main Hero Headline matching reference style */}
+          {/* Main Hero Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 dark:text-white uppercase leading-[1.06] max-w-5xl relative z-10"
+            className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 dark:text-white uppercase leading-[1.06] max-w-5xl relative z-20"
           >
             RESERVE A TABLE. <br />
             GET A TABLE. <span className="font-light italic text-slate-600 dark:text-slate-400 normal-case">Save the Night.</span>
@@ -372,18 +337,18 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mt-5 leading-relaxed relative z-10"
+            className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mt-5 leading-relaxed relative z-20"
           >
             Your city's premier dining spots already survived the rush. Discover verified table allocations, 
             rate culinary experiences, and reserve across all 8 Bangladesh divisions.
           </motion.p>
 
-          {/* Pill Action Buttons matching reference style */}
+          {/* Pill Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4 relative z-10"
+            className="mt-8 flex flex-wrap items-center justify-center gap-4 relative z-20"
           >
             <button
               onClick={() => {
@@ -404,8 +369,8 @@ export const HeroSection = () => {
             </button>
           </motion.div>
 
-          {/* Holographic Telemetry HUD Bar */}
-          <div className="mt-8 flex items-center justify-center gap-6 sm:gap-10 text-[11px] font-mono text-slate-500 dark:text-slate-400 relative z-10">
+          {/* Telemetry HUD Bar */}
+          <div className="mt-8 flex items-center justify-center gap-6 sm:gap-10 text-[11px] font-mono text-slate-500 dark:text-slate-400 relative z-20">
             <span className="flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
               <span>8 DIVISIONS ACTIVE</span>
@@ -428,7 +393,7 @@ export const HeroSection = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
             
             {/* 1. Division Selector */}
-            <div className="p-2.5 rounded-2xl bg-white dark:bg-surface-200/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+            <div className="p-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-500 dark:text-gold-400 shrink-0">
                 <Compass className="w-4 h-4" />
               </div>
@@ -458,7 +423,7 @@ export const HeroSection = () => {
             </div>
 
             {/* 2. Date Picker */}
-            <div className="p-2.5 rounded-2xl bg-white dark:bg-surface-200/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+            <div className="p-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-500 dark:text-gold-400 shrink-0">
                 <Calendar className="w-4 h-4" />
               </div>
@@ -477,7 +442,7 @@ export const HeroSection = () => {
             </div>
 
             {/* 3. Guests Party Size */}
-            <div className="p-2.5 rounded-2xl bg-white dark:bg-surface-200/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
+            <div className="p-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 flex items-center gap-3 shadow-sm">
               <div className="w-8 h-8 rounded-xl bg-gold-500/10 flex items-center justify-center text-gold-500 dark:text-gold-400 shrink-0">
                 <Users className="w-4 h-4" />
               </div>
@@ -516,10 +481,9 @@ export const HeroSection = () => {
           </div>
         </div>
 
-        {/* 3 Bottom Minimalist 3D Tilt Feature Cards (Matching reference design) */}
+        {/* 3 Bottom Minimalist 3D Tilt Feature Cards */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           
-          {/* Card 1: Division Dining Protocol */}
           <Interactive3DCard
             icon={BookOpen}
             title="Division Dining Protocol"
@@ -528,7 +492,6 @@ export const HeroSection = () => {
             color="gold"
           />
 
-          {/* Card 2: Cryptographic Host Pass */}
           <Interactive3DCard
             icon={ShieldCheck}
             title="Cryptographic Host Pass"
@@ -537,7 +500,6 @@ export const HeroSection = () => {
             color="emerald"
           />
 
-          {/* Card 3: Verified Diner Community */}
           <Interactive3DCard
             icon={Award}
             title="Verified Diner Community"

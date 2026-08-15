@@ -8,13 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#080A10',
+        background: 'var(--bg-main)',
         surface: {
-          50: '#1e2433',
-          100: '#161B26',
-          200: '#111520',
-          300: '#0C0F17',
-          400: '#080A10',
+          50: 'var(--bg-surface-50)',
+          100: 'var(--bg-surface-100)',
+          200: 'var(--bg-surface-200)',
+          300: 'var(--bg-surface-300)',
+          400: 'var(--bg-surface-400)',
+        },
+        content: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
         },
         gold: {
           400: '#FBBF24',
@@ -37,9 +42,10 @@ export default {
         display: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
       },
       boxShadow: {
-        'glow-gold': '0 0 25px -5px rgba(245, 158, 11, 0.3)',
-        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.3)',
-        'card-elevated': '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08)',
+        'glow-gold': '0 0 25px -5px rgba(245, 158, 11, 0.35)',
+        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.35)',
+        'card-elevated': '0 15px 35px -10px rgba(0, 0, 0, 0.1), 0 0 1px 1px rgba(0, 0, 0, 0.05)',
+        'card-elevated-dark': '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08)',
       },
       animation: {
         'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -45,8 +45,10 @@ function MainLayout() {
   const { isHostPortalOpen, setIsHostPortalOpen, isAdminModalOpen, setIsAdminModalOpen } = useReservation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-slate-100 selection:bg-gold-500 selection:text-black">
+    <div className="min-h-screen flex flex-col master-gradient-bg text-slate-900 dark:text-slate-100 selection:bg-gold-500 selection:text-black transition-colors duration-300">
       <Navbar />
+
+
       <main className="flex-1">
         <HeroSection />
         <DivisionQuickSwitcher />

@@ -1,7 +1,17 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tableturn_super_secret_jwt_key_2026';
+const getJwtSecret = () => {
+  if (process.env.JWT_SECRET) {
+    return process.env.JWT_SECRET;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL SECURITY ERROR: JWT_SECRET environment variable is missing in production!');
+  }
+  console.warn('[SECURITY WARNING] JWT_SECRET environment variable is not set. Using fallback development secret.');
+  return 'tableturn_dev_jwt_secret_key_2026_do_not_use_in_prod';
+};
+
+const JWT_SECRET = getJwtSecret();
 
 const protect = async (req, res, next) => {
   let token;
@@ -21,7 +31,7 @@ const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     req.user = decoded;
     next();
   } catch (err) {
@@ -44,4 +54,5 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize, JWT_SECRET };
+module.exports = { protect, authorize, getJwtSecret, JWT_SECRET };
+

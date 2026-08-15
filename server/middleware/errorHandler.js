@@ -22,10 +22,18 @@ const errorHandler = (err, req, res, next) => {
     return res.status(400).json({ success: false, message });
   }
 
-  res.status(error.statusCode || 500).json({
+  const isProduction = process.env.NODE_ENV === 'production';
+  const statusCode = error.statusCode || 500;
+  const responseMessage =
+    statusCode === 500 && isProduction
+      ? 'An internal error occurred. Please try again later.'
+      : error.message || 'Server Internal Error';
+
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Server Internal Error',
+    message: responseMessage,
   });
 };
 
 module.exports = errorHandler;
+

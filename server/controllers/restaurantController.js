@@ -10,12 +10,17 @@ let memoryRestaurants = seedRestaurants.map((item, index) => ({
   ...item,
 }));
 
+// Helper to safely escape regular expression special characters (ReDoS protection)
+const escapeRegex = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 // @desc    Get all restaurants with rich filtering and search
 // @route   GET /api/restaurants
 const getRestaurants = async (req, res) => {
   try {
     const isDB = getDBStatus();
-    console.log('[getRestaurants] DB connected:', isDB, 'Query:', req.query);
     const {
       division,
       subDistrict,
@@ -27,35 +32,42 @@ const getRestaurants = async (req, res) => {
       sort = 'recommended',
     } = req.query;
 
+    const safeDivision = typeof division === 'string' ? division.trim() : '';
+    const safeSubDistrict = typeof subDistrict === 'string' ? subDistrict.trim() : '';
+    const safeCuisine = typeof cuisine === 'string' ? cuisine.trim() : '';
+    const safePrice = typeof price === 'string' ? price.trim() : '';
+    const safeFeature = typeof feature === 'string' ? feature.trim() : '';
+    const safeSearch = typeof search === 'string' ? search.trim() : '';
+
     if (getDBStatus()) {
       let query = {};
 
-      if (division && division !== 'All') {
-        query.division = new RegExp(`^${division}$`, 'i');
+      if (safeDivision && safeDivision !== 'All') {
+        query.division = new RegExp(`^${escapeRegex(safeDivision)}$`, 'i');
       }
 
-      if (subDistrict && subDistrict !== 'All' && subDistrict !== 'All Areas') {
-        query.subDistrict = new RegExp(subDistrict, 'i');
+      if (safeSubDistrict && safeSubDistrict !== 'All' && safeSubDistrict !== 'All Areas') {
+        query.subDistrict = new RegExp(escapeRegex(safeSubDistrict), 'i');
       }
 
-      if (cuisine && cuisine !== 'All' && cuisine !== 'All Cuisines') {
-        query.cuisineTypes = { $in: [new RegExp(cuisine, 'i')] };
+      if (safeCuisine && safeCuisine !== 'All' && safeCuisine !== 'All Cuisines') {
+        query.cuisineTypes = { $in: [new RegExp(escapeRegex(safeCuisine), 'i')] };
       }
 
-      if (price && price !== 'All') {
-        query.priceCategory = price;
+      if (safePrice && safePrice !== 'All') {
+        query.priceCategory = safePrice;
       }
 
-      if (feature && feature !== 'All') {
-        query.features = { $in: [new RegExp(feature, 'i')] };
+      if (safeFeature && safeFeature !== 'All') {
+        query.features = { $in: [new RegExp(escapeRegex(safeFeature), 'i')] };
       }
 
-      if (minRating) {
+      if (minRating && !isNaN(parseFloat(minRating))) {
         query.rating = { $gte: parseFloat(minRating) };
       }
 
-      if (search && search.trim() !== '') {
-        const searchRegex = new RegExp(search.trim(), 'i');
+      if (safeSearch !== '') {
+        const searchRegex = new RegExp(escapeRegex(safeSearch), 'i');
         query.$or = [
           { name: searchRegex },
           { subDistrict: searchRegex },

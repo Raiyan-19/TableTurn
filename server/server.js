@@ -25,15 +25,50 @@ connectDB().then(async (connected) => {
   }
 });
 
+const { authLimiter, apiLimiter } = require('./middleware/rateLimiter');
+
 const app = express();
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// Security Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+// Configure CORS safely (VAPT-10)
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS policy blocked this cross-origin request.'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+app.use(express.json({ limit: '10kb' })); // Limit body payload size
 app.use(morgan('dev'));
 
-// API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+// Global API rate limiting
+app.use('/api', apiLimiter);
+
+// Specific Auth rate limiting (VAPT-08)
+app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/restaurants', require('./routes/restaurantRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
 

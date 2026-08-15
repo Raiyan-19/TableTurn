@@ -94,7 +94,7 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '10kb' })); // Limit body payload size
+app.use(express.json({ limit: '5mb' })); // Allow image uploads and data payloads
 app.use(morgan('dev'));
 
 // Global API rate limiting

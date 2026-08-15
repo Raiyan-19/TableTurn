@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -17,7 +17,11 @@ import {
   Crown,
   ChefHat,
   Save,
-  Check
+  Check,
+  UploadCloud,
+  Image as ImageIcon,
+  Trash2,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
@@ -33,15 +37,60 @@ const PRESET_AVATARS = [
   'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80',
 ];
 
+// Helper to compress uploaded image to a lightweight crisp data URL
+const compressImageFile = (file, maxWidth = 360, maxHeight = 360, quality = 0.85) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate aspect ratio scale
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Export as JPEG data URL for compact size (< 40KB)
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 export const ProfileEditModal = () => {
   const { user, updateUserProfile } = useAuth();
   const { isProfileModalOpen, setIsProfileModalOpen, showToast } = useReservation();
+
+  const fileInputRef = useRef(null);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [avatar, setAvatar] = useState('');
   const [customAvatarUrl, setCustomAvatarUrl] = useState('');
   const [showCustomUrlInput, setShowCustomUrlInput] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
 
   // Password update fields
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -62,6 +111,7 @@ export const ProfileEditModal = () => {
       setAvatar(user.avatar || PRESET_AVATARS[0]);
       setCustomAvatarUrl('');
       setShowCustomUrlInput(false);
+      setUploadedFileName('');
       setShowPasswordSection(false);
       setCurrentPassword('');
       setNewPassword('');
@@ -74,13 +124,48 @@ export const ProfileEditModal = () => {
 
   const handleAvatarSelect = (url) => {
     setAvatar(url);
+    setUploadedFileName('');
     setShowCustomUrlInput(false);
   };
 
   const handleCustomAvatarApply = () => {
     if (customAvatarUrl.trim()) {
       setAvatar(customAvatarUrl.trim());
+      setUploadedFileName('');
       setShowCustomUrlInput(false);
+    }
+  };
+
+  // Handle file selection from local device gallery or storage
+  const handleFileUpload = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    // Limit raw upload to 12MB
+    if (file.size > 12 * 1024 * 1024) {
+      setErrorMsg('Image size too large. Please select a photo under 12MB.');
+      return;
+    }
+
+    setIsProcessingFile(true);
+    setErrorMsg('');
+    try {
+      const compressedDataUrl = await compressImageFile(file);
+      setAvatar(compressedDataUrl);
+      setUploadedFileName(file.name);
+      setShowCustomUrlInput(false);
+      showToast('Photo loaded from device successfully!', 'success');
+    } catch (err) {
+      console.error('File compression error:', err);
+      setErrorMsg('Failed to process the chosen image. Please try another.');
+    } finally {
+      setIsProcessingFile(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -184,6 +269,15 @@ export const ProfileEditModal = () => {
           transition={{ duration: 0.2 }}
           className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#0B0F19] border border-slate-200 dark:border-white/10 shadow-2xl overflow-hidden z-10 my-6"
         >
+          {/* Hidden File Input for Device Storage / Gallery */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept="image/png, image/jpeg, image/jpg, image/webp"
+            className="hidden"
+          />
+
           {/* Header Banner */}
           <div className="relative p-6 sm:p-7 bg-gradient-to-r from-amber-500/15 via-gold-500/10 to-transparent border-b border-slate-200 dark:border-white/10">
             <button
@@ -228,37 +322,73 @@ export const ProfileEditModal = () => {
             {/* Avatar Selection Section */}
             <div>
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 uppercase tracking-wider flex items-center justify-between">
-                <span>Profile Avatar</span>
+                <span>Profile Photo & Avatar</span>
                 <span className="text-[10px] text-gold-600 dark:text-gold-400 font-mono font-medium lowercase">
-                  Choose preset or enter custom URL
+                  Upload file or pick avatar
                 </span>
               </label>
 
-              {/* Current Selected Avatar Preview */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative">
+              {/* Current Selected Avatar Preview & Action Controls */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex flex-col sm:flex-row items-center gap-4 mb-4">
+                <div className="relative shrink-0">
                   <img
                     src={avatar || PRESET_AVATARS[0]}
                     alt="Selected Avatar"
-                    className="w-16 h-16 rounded-2xl object-cover border-2 border-gold-500 shadow-glow-gold"
+                    className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-gold-500 shadow-glow-gold bg-slate-100 dark:bg-slate-900"
                     onError={(e) => {
                       e.target.src = PRESET_AVATARS[0];
                     }}
                   />
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gold-500 text-slate-950 flex items-center justify-center shadow-md">
-                    <Check className="w-3 h-3 stroke-[3]" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gold-500 text-slate-950 flex items-center justify-center shadow-md">
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">Active Avatar</p>
-                  <button
-                    type="button"
-                    onClick={() => setShowCustomUrlInput(!showCustomUrlInput)}
-                    className="text-[11px] font-semibold text-gold-600 dark:text-gold-400 hover:underline flex items-center gap-1 mt-0.5"
-                  >
-                    <Camera className="w-3 h-3" />
-                    <span>{showCustomUrlInput ? 'Hide URL input' : 'Use Custom Image URL'}</span>
-                  </button>
+
+                <div className="flex-1 min-w-0 text-center sm:text-left space-y-2">
+                  <div>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-center sm:justify-start gap-1.5">
+                      <span>Active Photo</span>
+                      {uploadedFileName && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 truncate max-w-[140px]">
+                          Device: {uploadedFileName}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Upload from phone/PC storage or choose a styled avatar below
+                    </p>
+                  </div>
+
+                  {/* Action Buttons: Device Gallery Upload & Custom URL */}
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                    <button
+                      type="button"
+                      disabled={isProcessingFile}
+                      onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                      className="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-gold-500 text-white hover:text-slate-950 dark:bg-gold-500/20 dark:hover:bg-gold-500 dark:text-gold-400 dark:hover:text-slate-950 border border-slate-800 dark:border-gold-500/40 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+                    >
+                      {isProcessingFile ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-3.5 h-3.5" />
+                          <span>Upload From Gallery</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCustomUrlInput(!showCustomUrlInput)}
+                      className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1"
+                    >
+                      <Camera className="w-3 h-3 text-gold-500" />
+                      <span>{showCustomUrlInput ? 'Hide URL' : 'Image URL'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -287,21 +417,26 @@ export const ProfileEditModal = () => {
               )}
 
               {/* Preset Avatar Grid */}
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                {PRESET_AVATARS.map((imgUrl, idx) => (
-                  <button
-                    type="button"
-                    key={idx}
-                    onClick={() => handleAvatarSelect(imgUrl)}
-                    className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all hover:scale-105 ${
-                      avatar === imgUrl
-                        ? 'border-gold-500 ring-2 ring-gold-500/30'
-                        : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={imgUrl} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
+              <div>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+                  Or pick a preset avatar:
+                </p>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                  {PRESET_AVATARS.map((imgUrl, idx) => (
+                    <button
+                      type="button"
+                      key={idx}
+                      onClick={() => handleAvatarSelect(imgUrl)}
+                      className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all hover:scale-105 ${
+                        avatar === imgUrl && !uploadedFileName
+                          ? 'border-gold-500 ring-2 ring-gold-500/30'
+                          : 'border-transparent opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={imgUrl} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -467,7 +602,7 @@ export const ProfileEditModal = () => {
 
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || isProcessingFile}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-gold-500 to-amber-400 hover:from-gold-500 hover:to-amber-300 text-slate-950 font-extrabold text-xs shadow-glow-gold transition-all flex items-center gap-2 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {saving ? (

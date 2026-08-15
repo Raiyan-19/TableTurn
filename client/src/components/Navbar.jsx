@@ -29,6 +29,8 @@ export const Navbar = () => {
     setIsBookingsDrawerOpen,
     setIsHostPortalOpen,
     setIsAdminModalOpen,
+    isProfileModalOpen,
+    setIsProfileModalOpen,
     myBookings,
     searchQuery,
     setSearchQuery 
